@@ -102,16 +102,19 @@ public class DataBase {
 
 	}
 
-	public void executeUpdate(String query) {
+	public List<Integer> executeUpdate(String... queries) {
 		JdbcConnectionPool cp = null;
 		Connection conn = null;
 		PreparedStatement ps = null;
-		List<Map<String, String>> list = new ArrayList<>();
+		List<Integer> ints = new ArrayList<>();
 		try {
 			cp = getPool();
 			conn = cp.getConnection();
-			ps = conn.prepareStatement(query);
-			ps.executeUpdate();
+
+			for (String query : queries) {
+				ps = conn.prepareStatement(query);
+				ints.add(ps.executeUpdate());
+			}
 
 		} catch (SQLException | ClassNotFoundException e) {
 			LOGGER.severe("Error executing query" + e);
@@ -130,6 +133,7 @@ public class DataBase {
 				cp.dispose();
 			}
 		}
+		return ints;
 	}
 
 	private List<Map<String, String>> getMapList(ResultSet rs) throws SQLException {

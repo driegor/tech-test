@@ -64,15 +64,19 @@ public class UserRepositoryTest {
 	@Test
 	public void testCreateUser() {
 
+		List<String> roles = Arrays.asList("PAGE_1", "PAGE_2", "PAGE_3");
+
 		String userName = "newUser";
 		User user = repository.find(userName);
 		assertNull(user);
 
-		repository.save(UserBuilder.builder().userName(userName).password("123456").build());
+		repository.save(UserBuilder.builder().userName(userName).password("123456").roles(roles).build());
 
 		user = repository.find(userName);
 		assertNotNull(user);
 		assertEquals(userName, user.getUserName());
+		System.out.println(user);
+		assertTrue(user.getRoles().containsAll(roles));
 	}
 
 	@Test
