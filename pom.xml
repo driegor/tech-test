@@ -12,6 +12,12 @@
     	<maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
   	</properties>
+  	<repositories>
+	    <repository>
+	        <id>jcenter</id>
+	        <url>https://jcenter.bintray.com/</url>
+	    </repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 		    <groupId>com.google.code.gson</groupId>
@@ -24,10 +30,10 @@
 		   	<version>${h2.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>log4j</groupId>
-		    <artifactId>log4j</artifactId>
-		    <version>1.2.17</version>
-		</dependency>
+		        <groupId>org.jtwig</groupId>
+		        <artifactId>jtwig-core</artifactId>
+		        <version>5.65</version>
+		    </dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
