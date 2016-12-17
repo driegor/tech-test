@@ -55,18 +55,24 @@ public class DataBase {
 		}
 	}
 
-	public List<Map<String, String>> executeQuery(String query) {
+	public List<Map<String, String>> executeQuery(String query, String... params) {
 		JdbcConnectionPool cp = null;
 		Connection conn = null;
 		ResultSet rs = null;
-		PreparedStatement statement = null;
+		PreparedStatement ps = null;
 		List<Map<String, String>> list = new ArrayList<>();
 		try {
 			cp = getPool();
 			conn = cp.getConnection();
 
-			statement = conn.prepareStatement(query);
-			rs = statement.executeQuery();
+			ps = conn.prepareStatement(query);
+			if (params != null && params.length > 0) {
+				for (int i = 0; i < params.length; i++) {
+					ps.setString(i + 1, params[i]);
+				}
+			}
+
+			rs = ps.executeQuery();
 
 			list = getMapList(rs);
 
@@ -77,7 +83,7 @@ public class DataBase {
 				if (conn != null) {
 					conn.close();
 				}
-				if (statement != null) {
+				if (ps != null) {
 					conn.close();
 				}
 			} catch (SQLException e) {

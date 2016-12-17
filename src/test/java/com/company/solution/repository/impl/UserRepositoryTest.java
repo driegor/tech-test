@@ -1,5 +1,6 @@
 package com.company.solution.repository.impl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -41,4 +42,12 @@ public class UserRepositoryTest {
 
 	}
 
+	@Test
+	public void testGetByName() {
+
+		String userName = "user2";
+		User user = repository.find(userName);
+		assertNotNull(user);
+		assertEquals(userName, user.getUserName());
+	}
 }

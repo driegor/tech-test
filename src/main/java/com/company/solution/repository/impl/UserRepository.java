@@ -12,6 +12,8 @@ import com.company.solution.repository.IUserRepository;
 public class UserRepository implements IUserRepository {
 
 	private static final String FIND_ALL_QUERY = "SELECT username \"userName\",password \"password\" FROM USERS";
+	private static final String FIND_BY_NAME_QUERY = "SELECT username \"userName\",password \"password\" FROM USERS WHERE username =?";
+
 	private DataBase dataBase;
 	private Mapper mapper;
 
@@ -46,9 +48,10 @@ public class UserRepository implements IUserRepository {
 	}
 
 	@Override
-	public User find(String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public User find(String name) {
+		List<Map<String, String>> maps = dataBase.executeQuery(FIND_BY_NAME_QUERY, name);
+		return maps.stream().map(v -> mapper.mapHash(v, User.class)).collect(Collectors.toList()).stream().findFirst()
+				.get();
 	}
 
 	@Override
