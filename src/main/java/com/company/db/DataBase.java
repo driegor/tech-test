@@ -97,6 +97,36 @@ public class DataBase {
 
 	}
 
+	public void executeUpdate(String query) {
+		JdbcConnectionPool cp = null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		List<Map<String, String>> list = new ArrayList<>();
+		try {
+			cp = getPool();
+			conn = cp.getConnection();
+			ps = conn.prepareStatement(query);
+			ps.executeUpdate();
+
+		} catch (SQLException | ClassNotFoundException e) {
+			LOGGER.severe("Error executing query" + e);
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+				if (ps != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				LOGGER.severe("Error closing connection" + e);
+			}
+			if (cp != null) {
+				cp.dispose();
+			}
+		}
+	}
+
 	private List<Map<String, String>> getMapList(ResultSet rs) throws SQLException {
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -134,4 +164,5 @@ public class DataBase {
 		}
 		return mapList;
 	}
+
 }

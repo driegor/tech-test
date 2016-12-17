@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.company.common.utils.SecurityUtils;
 import com.company.db.DataBase;
 import com.company.solution.domain.User;
 import com.company.solution.mapper.Mapper;
@@ -13,6 +14,7 @@ public class UserRepository implements IUserRepository {
 
 	private static final String FIND_ALL_QUERY = "SELECT username \"userName\",password \"password\" FROM USERS";
 	private static final String FIND_BY_NAME_QUERY = "SELECT username \"userName\",password \"password\" FROM USERS WHERE username =?";
+	private static final String CREATE_USER_QUERY = "INSERT INTO USERS (username,password) values ('%s','%s')";
 
 	private DataBase dataBase;
 	private Mapper mapper;
@@ -50,12 +52,29 @@ public class UserRepository implements IUserRepository {
 	@Override
 	public User find(String name) {
 		List<Map<String, String>> maps = dataBase.executeQuery(FIND_BY_NAME_QUERY, name);
+
+		if (maps.isEmpty()) {
+			return null;
+		}
+
 		return maps.stream().map(v -> mapper.mapHash(v, User.class)).collect(Collectors.toList()).stream().findFirst()
 				.get();
 	}
 
 	@Override
-	public User save(User e) {
+	public User save(User user) {
+		try {
+			String insert = String.format(CREATE_USER_QUERY, user.getUserName(),
+					SecurityUtils.getFieldValue(user, "password"));
+			dataBase.executeUpdate(insert);
+			return find(user.getUserName());
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1) {
+			throw new SecurityException();
+		}
+	}
+
+	@Override
+	public User update(String id, User e) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -64,12 +83,6 @@ public class UserRepository implements IUserRepository {
 	public void delete(String id) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public User update(String id, User e) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

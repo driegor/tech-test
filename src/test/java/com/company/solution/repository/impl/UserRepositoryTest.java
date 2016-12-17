@@ -3,6 +3,7 @@ package com.company.solution.repository.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import org.junit.Test;
 
 import com.company.db.DataBase;
 import com.company.solution.domain.User;
+import com.company.solution.domain.User.UserBuilder;
 import com.company.solution.mapper.Mapper;
 
 public class UserRepositoryTest {
@@ -47,6 +49,20 @@ public class UserRepositoryTest {
 
 		String userName = "user2";
 		User user = repository.find(userName);
+		assertNotNull(user);
+		assertEquals(userName, user.getUserName());
+	}
+
+	@Test
+	public void testCreateUser() {
+
+		String userName = "newUser";
+		User user = repository.find(userName);
+		assertNull(user);
+
+		repository.save(UserBuilder.builder().userName(userName).password("123456").build());
+
+		user = repository.find(userName);
 		assertNotNull(user);
 		assertEquals(userName, user.getUserName());
 	}
