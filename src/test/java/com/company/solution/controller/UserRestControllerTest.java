@@ -21,6 +21,7 @@ import com.company.mvc.enums.HttpStatus;
 import com.company.mvc.response.Response;
 import com.company.solution.common.dto.UserDTO;
 import com.company.solution.common.dto.UserDTO.UserDTOBuilder;
+import com.company.solution.exception.ServiceException;
 import com.company.solution.service.IUserService;
 
 public class UserRestControllerTest extends MockitoTest {
@@ -32,7 +33,7 @@ public class UserRestControllerTest extends MockitoTest {
 	UserRestController userRestController;
 
 	@Test
-	public void testGet() {
+	public void testGet() throws ServiceException {
 		String name = "dummyName";
 		String password = "password";
 
@@ -48,7 +49,7 @@ public class UserRestControllerTest extends MockitoTest {
 	}
 
 	@Test
-	public void testGetAll() {
+	public void testGetAll() throws ServiceException {
 		String name = "dummyName";
 		String password = "password";
 
@@ -69,7 +70,7 @@ public class UserRestControllerTest extends MockitoTest {
 	}
 
 	@Test
-	public void testPost() {
+	public void testPost() throws ServiceException {
 		String name = "dummyName";
 		String password = "password";
 
@@ -85,7 +86,7 @@ public class UserRestControllerTest extends MockitoTest {
 	}
 
 	@Test
-	public void testPut() {
+	public void testPut() throws ServiceException {
 		String name = "dummyName";
 		String password = "password";
 
@@ -101,7 +102,7 @@ public class UserRestControllerTest extends MockitoTest {
 	}
 
 	@Test
-	public void testDelete() {
+	public void testDelete() throws ServiceException {
 		String name = "dummyName";
 		Response response = userRestController.delete(name);
 		verify(userService, times(1)).remove(name);

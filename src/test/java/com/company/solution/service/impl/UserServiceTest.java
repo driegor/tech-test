@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,6 +24,7 @@ import com.company.solution.common.dto.UserDTO;
 import com.company.solution.common.dto.UserDTO.UserDTOBuilder;
 import com.company.solution.domain.User;
 import com.company.solution.domain.User.UserBuilder;
+import com.company.solution.exception.ServiceException;
 import com.company.solution.mapper.Mapper;
 import com.company.solution.repository.IUserRepository;
 
@@ -44,7 +46,7 @@ public class UserServiceTest extends MockitoTest {
 	}
 
 	@Test
-	public void testGet() {
+	public void testGet() throws SQLException, ServiceException {
 		String name = "dummyName";
 		String password = "dummyPassword";
 
@@ -60,7 +62,7 @@ public class UserServiceTest extends MockitoTest {
 	}
 
 	@Test
-	public void testGetAll() {
+	public void testGetAll() throws SQLException, ServiceException {
 		String name = "dummyName";
 		String password = "password";
 
@@ -84,7 +86,7 @@ public class UserServiceTest extends MockitoTest {
 	}
 
 	@Test
-	public void testSave() {
+	public void testSave() throws SQLException, ServiceException {
 		String name = "dummyName";
 		String password = "password";
 
@@ -100,7 +102,7 @@ public class UserServiceTest extends MockitoTest {
 	}
 
 	@Test
-	public void testUpdate() {
+	public void testUpdate() throws SQLException, ServiceException {
 		String name = "dummyName";
 		String password = "password";
 
@@ -116,7 +118,7 @@ public class UserServiceTest extends MockitoTest {
 	}
 
 	@Test
-	public void testDelete() {
+	public void testDelete() throws SQLException, ServiceException {
 		String name = "dummyName";
 		userService.remove(name);
 		verify(userRepository, times(1)).delete(name);

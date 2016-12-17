@@ -22,9 +22,10 @@ import org.h2.tools.RunScript;
 
 public class DataBase {
 
+	private static final String ERROR_CLOSING_CONNECTION = "Error closing connection";
 	private static final String DB_DRIVER = "org.h2.Driver";
 	private static final String SCRIPT_FILE_NAME = "script.sql";
-	private static final String DB_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
+	private static final String DB_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;trace_level_system_out=3";
 
 	private static final Logger LOGGER = Logger.getLogger(DataBase.class);
 
@@ -42,14 +43,14 @@ public class DataBase {
 			conn = cp.getConnection();
 			RunScript.execute(conn, new InputStreamReader(in));
 		} catch (ClassNotFoundException | SQLException | IOException e) {
-			LOGGER.error("Error initializing DB. " + e);
+			LOGGER.error("Error initializing DB. ", e);
 		} finally {
 			try {
 				if (conn != null) {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				LOGGER.error("Error closing connection" + e);
+				LOGGER.error(ERROR_CLOSING_CONNECTION, e);
 			}
 			if (cp != null) {
 				cp.dispose();
@@ -58,10 +59,15 @@ public class DataBase {
 	}
 
 	public void shutDown() {
-		executeUpdate("SHUTDOWN");
+		try {
+			executeUpdate("SHUTDOWN");
+		} catch (SQLException e) {
+			LOGGER.error("Database already closed", e);
+
+		}
 	}
 
-	public List<Map<String, String>> executeQuery(String query, String... params) {
+	public List<Map<String, String>> executeQuery(String query, String... params) throws SQLException {
 		JdbcConnectionPool cp = null;
 		Connection conn = null;
 		ResultSet rs = null;
@@ -84,18 +90,19 @@ public class DataBase {
 
 			list = getMapList(rs);
 
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			LOGGER.error("Error executing query" + e);
 		} finally {
 			try {
 				if (conn != null) {
+
 					conn.close();
 				}
 				if (ps != null) {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				LOGGER.error("Error closing connection" + e);
+				LOGGER.error(ERROR_CLOSING_CONNECTION, e);
 			}
 			if (cp != null) {
 				cp.dispose();
@@ -105,7 +112,7 @@ public class DataBase {
 
 	}
 
-	public List<Integer> executeUpdate(String... queries) {
+	public List<Integer> executeUpdate(String... queries) throws SQLException {
 		JdbcConnectionPool cp = null;
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -113,6 +120,7 @@ public class DataBase {
 		try {
 			cp = getPool();
 			conn = cp.getConnection();
+			conn.setAutoCommit(false);
 
 			for (String query : queries) {
 				LOGGER.debug(String.format("Executing query %s", query));
@@ -120,18 +128,25 @@ public class DataBase {
 				ints.add(ps.executeUpdate());
 			}
 
+			conn.commit();
+
 		} catch (SQLException | ClassNotFoundException e) {
 			LOGGER.error("Error executing query" + e);
+			if (conn != null) {
+				conn.rollback();
+			}
 		} finally {
 			try {
 				if (conn != null) {
+					conn.setAutoCommit(true);
+
 					conn.close();
 				}
 				if (ps != null) {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				LOGGER.error("Error closing connection" + e);
+				LOGGER.error(ERROR_CLOSING_CONNECTION, e);
 			}
 			if (cp != null) {
 				cp.dispose();

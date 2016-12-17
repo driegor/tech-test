@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,12 +36,12 @@ public class UserRepositoryTest {
 	}
 
 	@After
-	public void cleanUp() {
+	public void cleanUp() throws SQLException {
 		db.shutDown();
 	}
 
 	@Test
-	public void testGetAll() {
+	public void testGetAll() throws SQLException {
 
 		List<String> userNames = Arrays.asList("user1", "user2", "user3", "admin");
 
@@ -53,7 +54,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void testGetByName() {
+	public void testGetByName() throws SQLException {
 
 		String userName = "user2";
 		User user = repository.find(userName);
@@ -62,7 +63,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void testCreateUser() {
+	public void testCreateUser() throws SQLException {
 
 		List<String> roles = Arrays.asList("PAGE_1", "PAGE_2", "PAGE_3");
 
@@ -79,7 +80,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void updateUser() {
+	public void updateUser() throws SQLException {
 
 		String userName = "user";
 
@@ -104,7 +105,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void deleteUser() {
+	public void deleteUser() throws SQLException {
 
 		String userName = "makeUpUser";
 

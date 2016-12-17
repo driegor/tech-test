@@ -1,5 +1,6 @@
 package com.company.solution.repository.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,13 +55,13 @@ public class UserRepository implements IUserRepository {
 	}
 
 	@Override
-	public List<User> findAll() {
+	public List<User> findAll() throws SQLException {
 		List<Map<String, String>> maps = dataBase.executeQuery(FIND_ALL_QUERY);
 		return groupByUserName(maps);
 	}
 
 	@Override
-	public User find(String name) {
+	public User find(String name) throws SQLException {
 		List<Map<String, String>> maps = dataBase.executeQuery(FIND_BY_NAME_QUERY, name);
 
 		if (maps.isEmpty()) {
@@ -70,7 +71,7 @@ public class UserRepository implements IUserRepository {
 	}
 
 	@Override
-	public User save(User user) {
+	public User save(User user) throws SQLException {
 		try {
 			dataBase.executeUpdate(getCreateUserQueries(user));
 			return find(user.getUserName());
@@ -80,7 +81,7 @@ public class UserRepository implements IUserRepository {
 	}
 
 	@Override
-	public User update(String userName, User user) {
+	public User update(String userName, User user) throws SQLException {
 		try {
 			dataBase.executeUpdate(getUpdateUserQueries(userName, user, find(userName).getRoles()));
 			return find(user.getUserName());
@@ -90,7 +91,7 @@ public class UserRepository implements IUserRepository {
 	}
 
 	@Override
-	public void delete(String name) {
+	public void delete(String name) throws SQLException {
 		String deleteUser = String.format(DELETE_USER_QUERY, name);
 		String deleteRoles = String.format(DELETE_USER_ROLES_QUERY, name);
 		dataBase.executeUpdate(deleteUser, deleteRoles);
@@ -121,8 +122,7 @@ public class UserRepository implements IUserRepository {
 
 		// create user query
 		List<String> inserts = new ArrayList<>();
-		inserts.add(
-				String.format(CREATE_USER_QUERY, user.getUserName(), SecurityUtils.getFieldValue(user, PASSWORD)));
+		inserts.add(String.format(CREATE_USER_QUERY, user.getUserName(), SecurityUtils.getFieldValue(user, PASSWORD)));
 
 		// roles queries
 		user.getRoles().stream().forEach(role -> inserts.add(String.format(ADD_ROLE_QUERY, user.getUserName(), role)));

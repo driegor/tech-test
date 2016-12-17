@@ -21,8 +21,8 @@ public class DataBaseTest {
 	}
 
 	@After
-	public void cleanUp() {
-		db.shutDown();
+	public void cleanUp() throws SQLException {
+		// db.shutDown();
 	}
 
 	@Test
