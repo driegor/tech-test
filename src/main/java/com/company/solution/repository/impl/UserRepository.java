@@ -14,11 +14,15 @@ import com.company.solution.repository.IUserRepository;
 
 public class UserRepository implements IUserRepository {
 
+	private static final String ROLE = "role";
+	private static final String USER_NAME = "userName";
+	private static final String PASSWORD = "password";
 	private static final String FIND_ALL_QUERY = "SELECT u.username \"userName\",u.password \"password\",ur.role \"role\" FROM USERS U LEFT JOIN USER_ROLES UR ON u.username=ur.username";
 	private static final String FIND_BY_NAME_QUERY = "SELECT u.username \"userName\",u.password \"password\",ur.role \"role\" FROM USERS U LEFT JOIN USER_ROLES UR ON u.username=ur.username WHERE u.username =?";
 	private static final String CREATE_USER_QUERY = "INSERT INTO USERS (username,password) values ('%s','%s')";
 	private static final String ADD_ROLE_QUERY = "INSERT INTO USER_ROLES (username,role) values ('%s','%s')";
 	private static final String DELETE_ROLE_QUERY = "DELETE FROM USER_ROLES WHERE username ='%s' AND role = '%s'";
+	private static final String DELETE_USER_ROLES_QUERY = "DELETE FROM USER_ROLES WHERE username ='%s'";
 	private static final String UPDATE_USER_QUERY = "UPDATE USERS SET password='%s' WHERE username='%s'";
 	private static final String DELETE_USER_QUERY = "DELETE FROM USERS WHERE username ='%s'";
 
@@ -52,7 +56,7 @@ public class UserRepository implements IUserRepository {
 	@Override
 	public List<User> findAll() {
 		List<Map<String, String>> maps = dataBase.executeQuery(FIND_ALL_QUERY);
-		return groupUsersByName(maps);
+		return groupByUserName(maps);
 	}
 
 	@Override
@@ -62,7 +66,7 @@ public class UserRepository implements IUserRepository {
 		if (maps.isEmpty()) {
 			return null;
 		}
-		return groupUsersByName(maps).stream().findFirst().get();
+		return groupByUserName(maps).stream().findFirst().get();
 	}
 
 	@Override
@@ -87,8 +91,9 @@ public class UserRepository implements IUserRepository {
 
 	@Override
 	public void delete(String name) {
-		String delete = String.format(DELETE_USER_QUERY, name);
-		dataBase.executeUpdate(delete);
+		String deleteUser = String.format(DELETE_USER_QUERY, name);
+		String deleteRoles = String.format(DELETE_USER_ROLES_QUERY, name);
+		dataBase.executeUpdate(deleteUser, deleteRoles);
 	}
 
 	private String[] getUpdateUserQueries(String userName, User user, List<String> oldRoles)
@@ -96,7 +101,7 @@ public class UserRepository implements IUserRepository {
 
 		// create user query
 		List<String> updates = new ArrayList<>();
-		updates.add(String.format(UPDATE_USER_QUERY, SecurityUtils.getFieldValue(user, "password"), userName));
+		updates.add(String.format(UPDATE_USER_QUERY, SecurityUtils.getFieldValue(user, PASSWORD), userName));
 
 		List<String> newRoles = new ArrayList<>(user.getRoles());
 
@@ -117,26 +122,24 @@ public class UserRepository implements IUserRepository {
 		// create user query
 		List<String> inserts = new ArrayList<>();
 		inserts.add(
-				String.format(CREATE_USER_QUERY, user.getUserName(), SecurityUtils.getFieldValue(user, "password")));
+				String.format(CREATE_USER_QUERY, user.getUserName(), SecurityUtils.getFieldValue(user, PASSWORD)));
 
 		// roles queries
-		if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-			user.getRoles().stream()
-					.forEach(role -> inserts.add(String.format(ADD_ROLE_QUERY, user.getUserName(), role)));
-		}
+		user.getRoles().stream().forEach(role -> inserts.add(String.format(ADD_ROLE_QUERY, user.getUserName(), role)));
+
 		return inserts.toArray(new String[inserts.size()]);
 	}
 
-	private List<User> groupUsersByName(List<Map<String, String>> maps) {
+	private List<User> groupByUserName(List<Map<String, String>> maps) {
 		List<User> users = new ArrayList<>();
 
 		// group by userName
 		Map<String, List<Map<String, String>>> groups = maps.stream()
-				.collect(Collectors.groupingBy(p -> p.get("userName")));
+				.collect(Collectors.groupingBy(p -> p.get(USER_NAME)));
 
 		// get roles
 		groups.forEach((userName, v) -> {
-			List<String> roles = v.stream().map(p -> p.get("role")).filter(p -> p != null).collect(Collectors.toList());
+			List<String> roles = v.stream().map(p -> p.get(ROLE)).filter(p -> p != null).collect(Collectors.toList());
 			// we don't get password value
 			users.add(UserBuilder.builder().userName(userName).roles(roles).build());
 		});

@@ -55,7 +55,7 @@ public class UserServiceTest extends MockitoTest {
 		UserDTO dto = userService.get(name);
 
 		assertNotNull(dto);
-		assertThat(expectedDTO, new ReflectionEquals(dto));
+		assertThat(expectedDTO, new ReflectionEquals(dto, "roles"));
 
 	}
 
@@ -95,7 +95,7 @@ public class UserServiceTest extends MockitoTest {
 		UserDTO savedDTO = userService.save(dto);
 
 		assertNotNull(dto);
-		assertThat(savedDTO, new ReflectionEquals(dto));
+		assertThat(savedDTO, new ReflectionEquals(dto, "roles"));
 
 	}
 
@@ -111,7 +111,7 @@ public class UserServiceTest extends MockitoTest {
 		UserDTO savedDTO = userService.save(name, dto);
 
 		assertNotNull(dto);
-		assertThat(savedDTO, new ReflectionEquals(dto));
+		assertThat(savedDTO, new ReflectionEquals(dto, "roles"));
 
 	}
 
