@@ -35,6 +35,7 @@ public class DataBase {
 	public void init() {
 		JdbcConnectionPool cp = null;
 		Connection conn = null;
+
 		try (InputStream in = ClassLoader.getSystemResourceAsStream(SCRIPT_FILE_NAME)) {
 			cp = getPool();
 			conn = cp.getConnection();
@@ -53,6 +54,10 @@ public class DataBase {
 				cp.dispose();
 			}
 		}
+	}
+
+	public void shutDown() {
+		executeUpdate("SHUTDOWN");
 	}
 
 	public List<Map<String, String>> executeQuery(String query, String... params) {

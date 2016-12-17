@@ -15,6 +15,8 @@ public class UserRepository implements IUserRepository {
 	private static final String FIND_ALL_QUERY = "SELECT username \"userName\",password \"password\" FROM USERS";
 	private static final String FIND_BY_NAME_QUERY = "SELECT username \"userName\",password \"password\" FROM USERS WHERE username =?";
 	private static final String CREATE_USER_QUERY = "INSERT INTO USERS (username,password) values ('%s','%s')";
+	private static final String UPDATE_USER_QUERY = "UPDATE USERS SET username ='%s',password='%s' WHERE username='%s'";
+	private static final String DELETE_USER_QUERY = "DELETE FROM USERS WHERE username ='%s'";
 
 	private DataBase dataBase;
 	private Mapper mapper;
@@ -74,15 +76,21 @@ public class UserRepository implements IUserRepository {
 	}
 
 	@Override
-	public User update(String id, User e) {
-		// TODO Auto-generated method stub
-		return null;
+	public User update(String name, User user) {
+		try {
+			String update = String.format(UPDATE_USER_QUERY, user.getUserName(),
+					SecurityUtils.getFieldValue(user, "password"), name);
+			dataBase.executeUpdate(update);
+			return find(user.getUserName());
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1) {
+			throw new SecurityException();
+		}
 	}
 
 	@Override
-	public void delete(String id) {
-		// TODO Auto-generated method stub
-
+	public void delete(String name) {
+		String delete = String.format(DELETE_USER_QUERY, name);
+		dataBase.executeUpdate(delete);
 	}
 
 }

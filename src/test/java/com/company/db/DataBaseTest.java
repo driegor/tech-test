@@ -6,25 +6,31 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class DataBaseTest {
 
-	private DataBase dataBase;
+	private DataBase db;
 
 	@Before
 	public void setup() {
-		dataBase = new DataBase();
-		dataBase.init();
+		db = new DataBase();
+		db.init();
+	}
+
+	@After
+	public void cleanUp() {
+		db.shutDown();
 	}
 
 	@Test
 	public void testGetAllData() throws SQLException {
-		List<Map<String, String>> users = dataBase.executeQuery("select * from USERS");
+		List<Map<String, String>> users = db.executeQuery("select * from USERS");
 		assertTrue(users.size() == 4);
 
-		List<Map<String, String>> roles = dataBase.executeQuery("select * from ROLES");
+		List<Map<String, String>> roles = db.executeQuery("select * from ROLES");
 		assertTrue(roles.size() == 4);
 	}
 
