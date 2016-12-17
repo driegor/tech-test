@@ -1,11 +1,12 @@
 package com.company.solution.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
 
 	private String userName;
-	private List<String> roles;
+	private List<String> roles = new ArrayList<>();
 	private String password;
 
 	public String getUserName() {
@@ -46,6 +47,9 @@ public class User {
 		}
 
 		public UserBuilder roles(List<String> roles) {
+			if (roles == null || roles.isEmpty()) {
+				return this;
+			}
 			instance.setRoles(roles);
 			return this;
 		}

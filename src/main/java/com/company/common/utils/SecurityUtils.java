@@ -9,7 +9,8 @@ public class SecurityUtils {
 		Field f = object.getClass().getDeclaredField(fieldName);
 		f.setAccessible(true);// Very important, this allows the setting to//
 								// work.
-		return (String) f.get(object);
+		Object value = f.get(object);
+		return value == null ? null : String.valueOf(value);
 	}
 
 }

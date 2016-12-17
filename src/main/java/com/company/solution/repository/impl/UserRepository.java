@@ -18,7 +18,8 @@ public class UserRepository implements IUserRepository {
 	private static final String FIND_BY_NAME_QUERY = "SELECT u.username \"userName\",u.password \"password\",ur.role \"role\" FROM USERS U LEFT JOIN USER_ROLES UR ON u.username=ur.username WHERE u.username =?";
 	private static final String CREATE_USER_QUERY = "INSERT INTO USERS (username,password) values ('%s','%s')";
 	private static final String ADD_ROLE_QUERY = "INSERT INTO USER_ROLES (username,role) values ('%s','%s')";
-	private static final String UPDATE_USER_QUERY = "UPDATE USERS SET username ='%s',password='%s' WHERE username='%s'";
+	private static final String DELETE_ROLE_QUERY = "DELETE FROM USER_ROLES WHERE username ='%s' AND role = '%s'";
+	private static final String UPDATE_USER_QUERY = "UPDATE USERS SET password='%s' WHERE username='%s'";
 	private static final String DELETE_USER_QUERY = "DELETE FROM USERS WHERE username ='%s'";
 
 	private DataBase dataBase;
@@ -75,13 +76,9 @@ public class UserRepository implements IUserRepository {
 	}
 
 	@Override
-	public User update(String name, User user) {
+	public User update(String userName, User user) {
 		try {
-
-			String update = String.format(UPDATE_USER_QUERY, user.getUserName(),
-					SecurityUtils.getFieldValue(user, "password"), name);
-
-			dataBase.executeUpdate(update);
+			dataBase.executeUpdate(getUpdateUserQueries(userName, user, find(userName).getRoles()));
 			return find(user.getUserName());
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1) {
 			throw new SecurityException();
@@ -94,6 +91,27 @@ public class UserRepository implements IUserRepository {
 		dataBase.executeUpdate(delete);
 	}
 
+	private String[] getUpdateUserQueries(String userName, User user, List<String> oldRoles)
+			throws NoSuchFieldException, IllegalAccessException {
+
+		// create user query
+		List<String> updates = new ArrayList<>();
+		updates.add(String.format(UPDATE_USER_QUERY, SecurityUtils.getFieldValue(user, "password"), userName));
+
+		List<String> newRoles = new ArrayList<>(user.getRoles());
+
+		// we keep the new roles
+		newRoles.removeAll(oldRoles);
+
+		// we remove the old ones
+		oldRoles.removeAll(user.getRoles());
+
+		newRoles.stream().forEach(role -> updates.add(String.format(ADD_ROLE_QUERY, user.getUserName(), role)));
+		oldRoles.stream().forEach(role -> updates.add(String.format(DELETE_ROLE_QUERY, user.getUserName(), role)));
+
+		return updates.toArray(new String[updates.size()]);
+	}
+
 	private String[] getCreateUserQueries(User user) throws NoSuchFieldException, IllegalAccessException {
 
 		// create user query
@@ -101,7 +119,7 @@ public class UserRepository implements IUserRepository {
 		inserts.add(
 				String.format(CREATE_USER_QUERY, user.getUserName(), SecurityUtils.getFieldValue(user, "password")));
 
-		// add roles queries
+		// roles queries
 		if (user.getRoles() != null && !user.getRoles().isEmpty()) {
 			user.getRoles().stream()
 					.forEach(role -> inserts.add(String.format(ADD_ROLE_QUERY, user.getUserName(), role)));
@@ -118,8 +136,7 @@ public class UserRepository implements IUserRepository {
 
 		// get roles
 		groups.forEach((userName, v) -> {
-			List<String> roles = v.stream().map(p -> p.get("role")).collect(Collectors.toList());
-
+			List<String> roles = v.stream().map(p -> p.get("role")).filter(p -> p != null).collect(Collectors.toList());
 			// we don't get password value
 			users.add(UserBuilder.builder().userName(userName).roles(roles).build());
 		});

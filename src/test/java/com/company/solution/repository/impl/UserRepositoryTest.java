@@ -82,15 +82,28 @@ public class UserRepositoryTest {
 	@Test
 	public void updateUser() {
 
-		String oldUser = "oldUser";
-		String newUser = "newUser";
+		String userName = "user";
 
-		assertNull(repository.find(oldUser));
-		repository.save(UserBuilder.builder().userName(oldUser).password("123456").build());
-		assertNotNull(repository.find(oldUser));
-		assertNull(repository.find(newUser));
-		repository.update(oldUser, UserBuilder.builder().userName(newUser).build());
-		assertNotNull(repository.find(newUser));
+		List<String> oldRoles = Arrays.asList("PAGE_1", "PAGE_2", "PAGE_3");
+		List<String> newRoles = Arrays.asList("PAGE_2", "ADMIN");
+
+		assertNull(repository.find(userName));
+		repository.save(UserBuilder.builder().userName(userName).roles(oldRoles).password("123456").build());
+		User user = repository.find(userName);
+
+		assertNotNull(user);
+		System.out.println(user.getRoles());
+		assertTrue(oldRoles.equals(user.getRoles()));
+
+		assertNotNull(repository.find(userName));
+		repository.update(userName,
+				UserBuilder.builder().userName(userName).roles(newRoles).password("123456").build());
+		user = repository.find(userName);
+
+		assertNotNull(user);
+		System.out.println(user.getRoles());
+
+		assertTrue(newRoles.equals(user.getRoles()));
 
 	}
 
