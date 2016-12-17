@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
+import org.apache.log4j.Logger;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.tools.RunScript;
 
@@ -25,7 +25,8 @@ public class DataBase {
 	private static final String DB_DRIVER = "org.h2.Driver";
 	private static final String SCRIPT_FILE_NAME = "script.sql";
 	private static final String DB_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
-	private static final Logger LOGGER = Logger.getLogger(DataBase.class.getName());
+
+	private static final Logger LOGGER = Logger.getLogger(DataBase.class);
 
 	private JdbcConnectionPool getPool() throws ClassNotFoundException {
 		Class.forName(DB_DRIVER);
@@ -41,14 +42,14 @@ public class DataBase {
 			conn = cp.getConnection();
 			RunScript.execute(conn, new InputStreamReader(in));
 		} catch (ClassNotFoundException | SQLException | IOException e) {
-			LOGGER.severe("Error initializing DB. " + e);
+			LOGGER.error("Error initializing DB. " + e);
 		} finally {
 			try {
 				if (conn != null) {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				LOGGER.severe("Error closing connection" + e);
+				LOGGER.error("Error closing connection" + e);
 			}
 			if (cp != null) {
 				cp.dispose();
@@ -77,12 +78,14 @@ public class DataBase {
 				}
 			}
 
+			LOGGER.debug(String.format("Executing query %s", query));
+
 			rs = ps.executeQuery();
 
 			list = getMapList(rs);
 
 		} catch (SQLException | ClassNotFoundException e) {
-			LOGGER.severe("Error executing query" + e);
+			LOGGER.error("Error executing query" + e);
 		} finally {
 			try {
 				if (conn != null) {
@@ -92,7 +95,7 @@ public class DataBase {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				LOGGER.severe("Error closing connection" + e);
+				LOGGER.error("Error closing connection" + e);
 			}
 			if (cp != null) {
 				cp.dispose();
@@ -112,12 +115,13 @@ public class DataBase {
 			conn = cp.getConnection();
 
 			for (String query : queries) {
+				LOGGER.debug(String.format("Executing query %s", query));
 				ps = conn.prepareStatement(query);
 				ints.add(ps.executeUpdate());
 			}
 
 		} catch (SQLException | ClassNotFoundException e) {
-			LOGGER.severe("Error executing query" + e);
+			LOGGER.error("Error executing query" + e);
 		} finally {
 			try {
 				if (conn != null) {
@@ -127,7 +131,7 @@ public class DataBase {
 					conn.close();
 				}
 			} catch (SQLException e) {
-				LOGGER.severe("Error closing connection" + e);
+				LOGGER.error("Error closing connection" + e);
 			}
 			if (cp != null) {
 				cp.dispose();
@@ -148,7 +152,7 @@ public class DataBase {
 				names.add(rsmd.getColumnLabel(i));
 
 			} catch (SQLException e) {
-				LOGGER.severe("Error retrieving resulset column name" + e);
+				LOGGER.error("Error retrieving resulset column name" + e);
 			}
 		});
 
@@ -163,10 +167,10 @@ public class DataBase {
 					String value = rs.getString(name);
 					map.put(name, value);
 
-					LOGGER.fine(map.toString());
+					LOGGER.debug(map.toString());
 
 				} catch (SQLException e) {
-					LOGGER.severe("Error retrieving resulset column value" + e);
+					LOGGER.error("Error retrieving resulset column value" + e);
 				}
 			});
 			mapList.add(map);

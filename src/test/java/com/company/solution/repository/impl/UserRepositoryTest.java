@@ -75,7 +75,6 @@ public class UserRepositoryTest {
 		user = repository.find(userName);
 		assertNotNull(user);
 		assertEquals(userName, user.getUserName());
-		System.out.println(user);
 		assertTrue(user.getRoles().containsAll(roles));
 	}
 
@@ -92,7 +91,6 @@ public class UserRepositoryTest {
 		User user = repository.find(userName);
 
 		assertNotNull(user);
-		System.out.println(user.getRoles());
 		assertTrue(oldRoles.equals(user.getRoles()));
 
 		assertNotNull(repository.find(userName));
@@ -101,8 +99,6 @@ public class UserRepositoryTest {
 		user = repository.find(userName);
 
 		assertNotNull(user);
-		System.out.println(user.getRoles());
-
 		assertTrue(newRoles.equals(user.getRoles()));
 
 	}

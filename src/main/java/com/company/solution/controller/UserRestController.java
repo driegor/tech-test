@@ -1,7 +1,8 @@
 package com.company.solution.controller;
 
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 import com.company.mvc.annotations.RequestMapping;
 import com.company.mvc.enums.ContentType;
@@ -16,7 +17,7 @@ public class UserRestController extends GenericHandler {
 
 	public static final String ROOT_MAPPING = "/api/users";
 
-	private static final Logger LOGGER = Logger.getLogger(UserRestController.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(UserRestController.class);
 
 	private IUserService userService;
 
