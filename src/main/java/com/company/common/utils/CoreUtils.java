@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,14 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 public class CoreUtils {
+
+	public static String getFieldValue(Object object, String fieldName)
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Field f = object.getClass().getDeclaredField(fieldName);
+		f.setAccessible(true);// Very important
+		Object value = f.get(object);
+		return value == null ? null : String.valueOf(value);
+	}
 
 	public static <A extends Annotation> Collection<Method> getAnnotatedMethods(Class<A> annotationClass,
 			Object object) {

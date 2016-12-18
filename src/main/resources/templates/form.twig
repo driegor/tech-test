@@ -1,0 +1,18 @@
+<head>
+	<title>Backend Test Login Form</title>
+	<meta name="description" content="Technical test for Backends">
+</head>
+
+<h1>Login form</h1>
+
+
+<form method="post" action="/auth/login">
+  <label><b>Username</b></label>
+  <input type="text"  placeholder="Enter Username"  name="username" required>
+  <label><b>Password</b></label>
+  <input type="password" placeholder="Enter Password"  name="password" required>
+  <input type="submit" value="Login">
+  {% if ERROR %}
+  	<font color="red">{{ ERROR }}</font>
+  {% endif %}
+</form>

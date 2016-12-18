@@ -11,14 +11,14 @@ import com.company.solution.service.generic.ICrudService;
 public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements ICrudService<I, DTO> {
 
 	protected Mapper mapper;
-	protected C crudRepository;
+	protected C repository;
 	protected Class<DTO> dtoClazz;
 	protected Class<E> entityClazz;
 
 	@Override
 	public DTO get(I id) throws ServiceException {
 		try {
-			return mapper.map(crudRepository.find(id), dtoClazz);
+			return mapper.map(repository.find(id), dtoClazz);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
 		}
@@ -27,7 +27,7 @@ public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements 
 	@Override
 	public List<DTO> getAll() throws ServiceException {
 		try {
-			return mapper.mapList(crudRepository.findAll(), dtoClazz);
+			return mapper.mapList(repository.findAll(), dtoClazz);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
 
@@ -39,7 +39,7 @@ public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements 
 	public DTO save(DTO dto) throws ServiceException {
 		E entity = mapper.map(dto, entityClazz);
 		try {
-			return mapper.map(crudRepository.save(entity), dtoClazz);
+			return mapper.map(repository.save(entity), dtoClazz);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
 
@@ -50,7 +50,7 @@ public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements 
 	public DTO save(I id, DTO dto) throws ServiceException {
 		E entity = mapper.map(dto, entityClazz);
 		try {
-			return mapper.map(crudRepository.update(id, entity), dtoClazz);
+			return mapper.map(repository.update(id, entity), dtoClazz);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
 
@@ -60,7 +60,7 @@ public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements 
 	@Override
 	public void remove(I id) throws ServiceException {
 		try {
-			crudRepository.delete(id);
+			repository.delete(id);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
 

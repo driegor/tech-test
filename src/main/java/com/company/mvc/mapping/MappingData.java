@@ -11,6 +11,7 @@ public class MappingData {
 
 	private String bindingValue;
 	private String requestBody;
+	private String sessionId;
 	private Class<?> requestBodyClass;
 
 	public String getBindValue() {
@@ -53,6 +54,14 @@ public class MappingData {
 		this.requestBodyClass = requestBodyClass;
 	}
 
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public String getSessionId() {
+		return sessionId;
+	}
+
 	public static class MappingDataBuilder {
 
 		private MappingData instance;
@@ -87,6 +96,11 @@ public class MappingData {
 
 		public MappingDataBuilder requestBodyClass(Class<?> requestBodyClass) {
 			instance.setRequestBodyClass(requestBodyClass);
+			return this;
+		}
+
+		public MappingDataBuilder sessionId(String sessionId) {
+			instance.setSessionId(sessionId);
 			return this;
 		}
 

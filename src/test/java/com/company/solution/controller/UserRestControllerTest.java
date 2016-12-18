@@ -21,6 +21,7 @@ import com.company.mvc.enums.HttpStatus;
 import com.company.mvc.response.Response;
 import com.company.solution.common.dto.UserDTO;
 import com.company.solution.common.dto.UserDTO.UserDTOBuilder;
+import com.company.solution.controller.api.UserRestController;
 import com.company.solution.exception.ServiceException;
 import com.company.solution.service.IUserService;
 

@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.company.common.utils.SecurityUtils;
+import com.company.common.utils.CoreUtils;
 import com.company.db.DataBase;
 import com.company.solution.domain.User;
 import com.company.solution.domain.User.UserBuilder;
-import com.company.solution.mapper.Mapper;
 import com.company.solution.repository.IUserRepository;
 
 public class UserRepository implements IUserRepository {
@@ -20,6 +19,7 @@ public class UserRepository implements IUserRepository {
 	private static final String PASSWORD = "password";
 	private static final String FIND_ALL_QUERY = "SELECT u.username \"userName\",u.password \"password\",ur.role \"role\" FROM USERS U LEFT JOIN USER_ROLES UR ON u.username=ur.username";
 	private static final String FIND_BY_NAME_QUERY = "SELECT u.username \"userName\",u.password \"password\",ur.role \"role\" FROM USERS U LEFT JOIN USER_ROLES UR ON u.username=ur.username WHERE u.username =?";
+	private static final String FIND_BY_USERNAME_AND_PASSWORD_QUERY = "SELECT u.username \"userName\",u.password \"password\",ur.role \"role\" FROM USERS U LEFT JOIN USER_ROLES UR ON u.username=ur.username WHERE u.username =? and u.password=?";
 	private static final String CREATE_USER_QUERY = "INSERT INTO USERS (username,password) values ('%s','%s')";
 	private static final String ADD_ROLE_QUERY = "INSERT INTO USER_ROLES (username,role) values ('%s','%s')";
 	private static final String DELETE_ROLE_QUERY = "DELETE FROM USER_ROLES WHERE username ='%s' AND role = '%s'";
@@ -28,7 +28,6 @@ public class UserRepository implements IUserRepository {
 	private static final String DELETE_USER_QUERY = "DELETE FROM USERS WHERE username ='%s'";
 
 	private DataBase dataBase;
-	private Mapper mapper;
 
 	private static volatile UserRepository intance;
 
@@ -49,9 +48,8 @@ public class UserRepository implements IUserRepository {
 	}
 
 	// I would use a DI framework to inject these beans
-	public void init(DataBase dataBase, Mapper mapper) {
+	public void init(DataBase dataBase) {
 		this.dataBase = dataBase;
-		this.mapper = mapper;
 	}
 
 	@Override
@@ -63,6 +61,16 @@ public class UserRepository implements IUserRepository {
 	@Override
 	public User find(String name) throws SQLException {
 		List<Map<String, String>> maps = dataBase.executeQuery(FIND_BY_NAME_QUERY, name);
+
+		if (maps.isEmpty()) {
+			return null;
+		}
+		return groupByUserName(maps).stream().findFirst().get();
+	}
+
+	@Override
+	public User findByUserNameAndPassword(String userName, String password) throws SQLException {
+		List<Map<String, String>> maps = dataBase.executeQuery(FIND_BY_USERNAME_AND_PASSWORD_QUERY, userName, password);
 
 		if (maps.isEmpty()) {
 			return null;
@@ -102,7 +110,7 @@ public class UserRepository implements IUserRepository {
 
 		// create user query
 		List<String> updates = new ArrayList<>();
-		updates.add(String.format(UPDATE_USER_QUERY, SecurityUtils.getFieldValue(user, PASSWORD), userName));
+		updates.add(String.format(UPDATE_USER_QUERY, CoreUtils.getFieldValue(user, PASSWORD), userName));
 
 		List<String> newRoles = new ArrayList<>(user.getRoles());
 
@@ -122,7 +130,7 @@ public class UserRepository implements IUserRepository {
 
 		// create user query
 		List<String> inserts = new ArrayList<>();
-		inserts.add(String.format(CREATE_USER_QUERY, user.getUserName(), SecurityUtils.getFieldValue(user, PASSWORD)));
+		inserts.add(String.format(CREATE_USER_QUERY, user.getUserName(), CoreUtils.getFieldValue(user, PASSWORD)));
 
 		// roles queries
 		user.getRoles().stream().forEach(role -> inserts.add(String.format(ADD_ROLE_QUERY, user.getUserName(), role)));

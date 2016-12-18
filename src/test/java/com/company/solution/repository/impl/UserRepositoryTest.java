@@ -18,7 +18,6 @@ import org.junit.Test;
 import com.company.db.DataBase;
 import com.company.solution.domain.User;
 import com.company.solution.domain.User.UserBuilder;
-import com.company.solution.mapper.Mapper;
 
 public class UserRepositoryTest {
 
@@ -31,7 +30,7 @@ public class UserRepositoryTest {
 		db = new DataBase();
 		db.init();
 		repository = UserRepository.getInstance();
-		repository.init(db, new Mapper());
+		repository.init(db);
 
 	}
 
@@ -48,7 +47,7 @@ public class UserRepositoryTest {
 		List<User> users = repository.findAll();
 		assertNotNull(users);
 		assertFalse(users.isEmpty());
-		assertTrue(users.size() == 4);
+		assertEquals(4, users.size());
 		assertTrue(users.stream().map(m -> m.getUserName()).collect(Collectors.toList()).containsAll(userNames));
 
 	}
