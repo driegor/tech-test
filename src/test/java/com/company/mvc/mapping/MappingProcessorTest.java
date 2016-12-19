@@ -8,16 +8,22 @@ import java.lang.reflect.Method;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
 
 import com.company.data.DummyPostData;
+import com.company.mockito.MockitoTest;
 import com.company.mvc.exception.BadRequestException;
 import com.company.mvc.exception.HandlerException;
 import com.company.mvc.handler.GenericHandler;
 import com.company.mvc.mapping.MappingData.MappingDataBuilder;
 import com.company.mvc.response.Response;
 import com.company.mvc.response.Responses;
+import com.company.mvc.security.auth.IAuthService;
 
-public class MappingProcessorTest {
+public class MappingProcessorTest extends MockitoTest {
+
+	@Mock
+	IAuthService authService;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -36,7 +42,7 @@ public class MappingProcessorTest {
 		MappingProcessor mappingProcessor = new MappingProcessor();
 		String dummyBindingValue = "dummyValue";
 
-		GenericHandler handlerWithArgumentMisMatchMethod = new GenericHandler() {
+		GenericHandler handlerWithArgumentMisMatchMethod = new GenericHandler(authService) {
 			@SuppressWarnings("unused")
 			public void argumentMisMatchMethod(Integer integerArg) {
 			}
@@ -54,7 +60,7 @@ public class MappingProcessorTest {
 		MappingProcessor mappingProcessor = new MappingProcessor();
 		String dummyBindingValue = "dummyValue";
 
-		GenericHandler matchMethodHandler = new GenericHandler() {
+		GenericHandler matchMethodHandler = new GenericHandler(authService) {
 			@SuppressWarnings("unused")
 			public Response matchMethod(String value) {
 				return Responses.success(String.format("Dummy content with value =%s", value));
@@ -73,7 +79,7 @@ public class MappingProcessorTest {
 	public void testMethodWithStringPostData() throws HandlerException, NoSuchMethodException, SecurityException {
 		MappingProcessor mappingProcessor = new MappingProcessor();
 		String postData = "dummy post data";
-		GenericHandler matchMethodHandler = new GenericHandler() {
+		GenericHandler matchMethodHandler = new GenericHandler(authService) {
 			@SuppressWarnings("unused")
 			public Response matchMethod(String postData) {
 				return Responses.success(String.format("Dummy content with value =%s", postData));
@@ -94,7 +100,7 @@ public class MappingProcessorTest {
 		MappingProcessor mappingProcessor = new MappingProcessor();
 		String postData = "{'mail':driegor,'name':'dani'}";
 
-		GenericHandler matchMethodHandler = new GenericHandler() {
+		GenericHandler matchMethodHandler = new GenericHandler(authService) {
 			@SuppressWarnings("unused")
 			public Response matchMethod(DummyPostData postData) {
 				return Responses.success(String.format("Dummy content with value =%s", postData.toString()));
@@ -114,7 +120,7 @@ public class MappingProcessorTest {
 	public void testMethodInvokedWithoutParams() throws HandlerException, NoSuchMethodException, SecurityException {
 		MappingProcessor mappingProcessor = new MappingProcessor();
 
-		GenericHandler matchMethodHandler = new GenericHandler() {
+		GenericHandler matchMethodHandler = new GenericHandler(authService) {
 			@SuppressWarnings("unused")
 			public Response matchMethod() {
 				return Responses.success("Dummy content without value");

@@ -22,12 +22,16 @@ import com.company.mvc.exception.BadRequestException;
 import com.company.mvc.exception.HandlerException;
 import com.company.mvc.exception.MappingNotFoundException;
 import com.company.mvc.handler.GenericHandler;
+import com.company.mvc.security.auth.IAuthService;
 import com.sun.net.httpserver.HttpExchange;
 
 public class MappingHandlerTest extends MockitoTest {
 
 	@Mock
 	HttpExchange exchange;
+
+	@Mock
+	IAuthService authService;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -45,7 +49,7 @@ public class MappingHandlerTest extends MockitoTest {
 	@Test
 	public void testNotAnnotatedMethod() throws HandlerException, URISyntaxException {
 		MappingHandler mappingHandler = new MappingHandler();
-		GenericHandler dummyHandler = new GenericHandler();
+		GenericHandler dummyHandler = new GenericHandler(authService);
 		String path = "/dummy/path";
 		RequestMethod method = RequestMethod.GET;
 		when(exchange.getRequestMethod()).thenReturn(method.name());
@@ -60,7 +64,7 @@ public class MappingHandlerTest extends MockitoTest {
 	@Test
 	public void testPathDoesntMatch() throws HandlerException, URISyntaxException {
 		MappingHandler mappingHandler = new MappingHandler();
-		GenericHandler dummyHandler = new GenericHandler() {
+		GenericHandler dummyHandler = new GenericHandler(authService) {
 			@RequestMapping(pattern = "/different-dummy/path")
 			public void neverInvokedMethod() {
 			}
@@ -80,7 +84,7 @@ public class MappingHandlerTest extends MockitoTest {
 	@Test
 	public void testAnnotatedMethodDoesntMatch() throws HandlerException, URISyntaxException {
 		MappingHandler mappingHandler = new MappingHandler();
-		GenericHandler dummyHandler = new GenericHandler() {
+		GenericHandler dummyHandler = new GenericHandler(authService) {
 			@RequestMapping(pattern = "/dummy/path")
 			public void neverInvokedMethod() {
 			}
@@ -102,7 +106,7 @@ public class MappingHandlerTest extends MockitoTest {
 			throws HandlerException, URISyntaxException, NoSuchMethodException, SecurityException {
 		MappingHandler mappingHandler = new MappingHandler();
 
-		GenericHandler dummyHandler = new GenericHandler() {
+		GenericHandler dummyHandler = new GenericHandler(authService) {
 			@RequestMapping(pattern = "/dummy/path/([a-zA-Z0-9]+)")
 			public void neverInvokedMethod(String name) {
 			}
@@ -128,7 +132,7 @@ public class MappingHandlerTest extends MockitoTest {
 		String requestBody = "dummyRequestValue";
 		InputStream is = new ByteArrayInputStream(requestBody.getBytes());
 
-		GenericHandler dummyHandler = new GenericHandler() {
+		GenericHandler dummyHandler = new GenericHandler(authService) {
 			@RequestMapping(pattern = "/dummy/path/", method = RequestMethod.POST)
 			public void neverInvokedMethod(String postValue) {
 			}
