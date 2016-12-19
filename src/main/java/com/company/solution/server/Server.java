@@ -11,6 +11,7 @@ import com.company.db.DataBase;
 import com.company.mvc.security.auth.IAuthService;
 import com.company.mvc.security.filter.AuthenticationFilter;
 import com.company.mvc.security.filter.PropagateArgumentsFilter;
+import com.company.solution.controller.api.UserRestController;
 import com.company.solution.controller.page.LoginController;
 import com.company.solution.controller.page.PageController;
 import com.company.solution.mapper.Mapper;
@@ -36,6 +37,8 @@ public class Server {
 
 		HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 0);
 
+		createUserRestController(context, httpServer);
+
 		createLoginController(context, httpServer);
 		createPageController(context, httpServer);
 
@@ -43,6 +46,16 @@ public class Server {
 		httpServer.start();
 
 		LOGGER.info("Score server listening at port " + port);
+	}
+
+	private static void createUserRestController(Map<Object, Object> context, HttpServer server) {
+
+		IUserService userService = (IUserService) context.get(IUserService.class);
+		HttpContext httpPageContext = server.createContext(UserRestController.ROOT_MAPPING,
+				new UserRestController(userService));
+
+		// add filters
+
 	}
 
 	private static void createLoginController(Map<Object, Object> context, HttpServer server) {

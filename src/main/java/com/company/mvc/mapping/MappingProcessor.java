@@ -24,6 +24,11 @@ public class MappingProcessor {
 	}
 
 	// process request
+	public Response process(MappingData mappingData, HttpExchange exchange, Object controller) throws HandlerException {
+		return process(mappingData, exchange, Boolean.FALSE, controller);
+	}
+
+	// process request
 	public Response process(MappingData mappingData, HttpExchange exchange, boolean needsSession, Object controller)
 			throws HandlerException {
 

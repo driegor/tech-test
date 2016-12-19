@@ -6,8 +6,8 @@ import com.sun.net.httpserver.HttpExchange;
 
 public class Redirect {
 
-	public static void redirect(HttpExchange exchange, String loginURL) throws IOException {
-		exchange.getResponseHeaders().set("Location", loginURL);
+	public static void redirect(HttpExchange exchange, String targetUrl) throws IOException {
+		exchange.getResponseHeaders().set("Location", targetUrl);
 		exchange.sendResponseHeaders(301, -1);
 	}
 

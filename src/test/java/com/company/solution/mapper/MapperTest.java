@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.company.data.DummyPostData;
 import com.company.mvc.enums.ContentType;
 import com.company.solution.form.LoginForm;
 
@@ -71,6 +72,23 @@ public class MapperTest {
 		assertEquals(userName, form.getUserName());
 		assertEquals(password, form.getPassword());
 		assertEquals(postLoginDecoded, form.getPostLogin());
+	}
+
+	@Test
+	public void testStringToClassJson() throws UnsupportedEncodingException {
+
+		String postData = "{\"mail\":\"driegor\",\"name\":\"dani\"}";
+		Mapper mapper = new Mapper();
+
+		String mail = "driegor";
+		String name = "dani";
+
+		DummyPostData data = mapper.string2class(postData, DummyPostData.class, ContentType.APPLICATION_JSON);
+
+		assertNotNull(data);
+		assertEquals(mail, data.getMail());
+		assertEquals(name, data.getName());
+
 	}
 
 }

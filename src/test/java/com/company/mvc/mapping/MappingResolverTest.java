@@ -25,7 +25,7 @@ import com.company.mvc.handler.GenericHandler;
 import com.company.mvc.security.auth.IAuthService;
 import com.sun.net.httpserver.HttpExchange;
 
-public class MappingHandlerTest extends MockitoTest {
+public class MappingResolverTest extends MockitoTest {
 
 	@Mock
 	HttpExchange exchange;
@@ -38,18 +38,18 @@ public class MappingHandlerTest extends MockitoTest {
 
 	@Test
 	public void testBadRequestMethod() throws HandlerException {
-		MappingHandler mappingHandler = new MappingHandler();
+		MappingResolver mappingResolver = new MappingResolver();
 
 		when(exchange.getRequestMethod()).thenReturn("NOT-EXISTING-METHOD");
 		thrown.expect(BadRequestException.class);
-		mappingHandler.getMappingData(null, exchange, null);
+		mappingResolver.resolveMapping(null, exchange, null);
 
 	}
 
 	@Test
 	public void testNotAnnotatedMethod() throws HandlerException, URISyntaxException {
-		MappingHandler mappingHandler = new MappingHandler();
-		GenericHandler dummyHandler = new GenericHandler(authService);
+		MappingResolver mappingResolver = new MappingResolver();
+		GenericHandler dummyHandler = new GenericHandler();
 		String path = "/dummy/path";
 		RequestMethod method = RequestMethod.GET;
 		when(exchange.getRequestMethod()).thenReturn(method.name());
@@ -57,14 +57,14 @@ public class MappingHandlerTest extends MockitoTest {
 
 		thrown.expect(MappingNotFoundException.class);
 		thrown.expectMessage(String.format("Not mapping found for path ['%s'] and method ['%s']", path, method));
-		mappingHandler.getMappingData(null, exchange, dummyHandler);
+		mappingResolver.resolveMapping(null, exchange, dummyHandler);
 
 	}
 
 	@Test
 	public void testPathDoesntMatch() throws HandlerException, URISyntaxException {
-		MappingHandler mappingHandler = new MappingHandler();
-		GenericHandler dummyHandler = new GenericHandler(authService) {
+		MappingResolver mappingResolver = new MappingResolver();
+		GenericHandler dummyHandler = new GenericHandler() {
 			@RequestMapping(pattern = "/different-dummy/path")
 			public void neverInvokedMethod() {
 			}
@@ -77,14 +77,14 @@ public class MappingHandlerTest extends MockitoTest {
 
 		thrown.expect(MappingNotFoundException.class);
 		thrown.expectMessage(String.format("Not mapping found for path ['%s'] and method ['%s']", path, method));
-		mappingHandler.getMappingData(null, exchange, dummyHandler);
+		mappingResolver.resolveMapping(null, exchange, dummyHandler);
 
 	}
 
 	@Test
 	public void testAnnotatedMethodDoesntMatch() throws HandlerException, URISyntaxException {
-		MappingHandler mappingHandler = new MappingHandler();
-		GenericHandler dummyHandler = new GenericHandler(authService) {
+		MappingResolver mappingResolver = new MappingResolver();
+		GenericHandler dummyHandler = new GenericHandler() {
 			@RequestMapping(pattern = "/dummy/path")
 			public void neverInvokedMethod() {
 			}
@@ -97,16 +97,16 @@ public class MappingHandlerTest extends MockitoTest {
 
 		thrown.expect(MappingNotFoundException.class);
 		thrown.expectMessage(String.format("Not mapping found for path ['%s'] and method ['%s']", path, method));
-		mappingHandler.getMappingData(null, exchange, dummyHandler);
+		mappingResolver.resolveMapping(null, exchange, dummyHandler);
 
 	}
 
 	@Test
 	public void testBindingMethod()
 			throws HandlerException, URISyntaxException, NoSuchMethodException, SecurityException {
-		MappingHandler mappingHandler = new MappingHandler();
+		MappingResolver mappingResolver = new MappingResolver();
 
-		GenericHandler dummyHandler = new GenericHandler(authService) {
+		GenericHandler dummyHandler = new GenericHandler() {
 			@RequestMapping(pattern = "/dummy/path/([a-zA-Z0-9]+)")
 			public void neverInvokedMethod(String name) {
 			}
@@ -117,7 +117,7 @@ public class MappingHandlerTest extends MockitoTest {
 		when(exchange.getRequestMethod()).thenReturn(method.name());
 		Mockito.when(exchange.getRequestURI()).thenReturn(new URI(path));
 
-		MappingData mappingData = mappingHandler.getMappingData("", exchange, dummyHandler);
+		MappingData mappingData = mappingResolver.resolveMapping("", exchange, dummyHandler);
 
 		assertNotNull(mappingData);
 		assertEquals(method, mappingData.getRequestMethod());
@@ -128,11 +128,11 @@ public class MappingHandlerTest extends MockitoTest {
 
 	@Test
 	public void testPostMethod() throws HandlerException, URISyntaxException, NoSuchMethodException, SecurityException {
-		MappingHandler mappingHandler = new MappingHandler();
+		MappingResolver mappingResolver = new MappingResolver();
 		String requestBody = "dummyRequestValue";
 		InputStream is = new ByteArrayInputStream(requestBody.getBytes());
 
-		GenericHandler dummyHandler = new GenericHandler(authService) {
+		GenericHandler dummyHandler = new GenericHandler() {
 			@RequestMapping(pattern = "/dummy/path/", method = RequestMethod.POST)
 			public void neverInvokedMethod(String postValue) {
 			}
@@ -145,7 +145,7 @@ public class MappingHandlerTest extends MockitoTest {
 
 		Mockito.when(exchange.getRequestURI()).thenReturn(new URI(path));
 
-		MappingData mappingData = mappingHandler.getMappingData("", exchange, dummyHandler);
+		MappingData mappingData = mappingResolver.resolveMapping("", exchange, dummyHandler);
 
 		assertNotNull(mappingData);
 		assertEquals(method, mappingData.getRequestMethod());

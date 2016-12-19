@@ -37,6 +37,6 @@ public class Mapper {
 			return map2class(map, clazz);
 		}
 		// Json content
-		return map(input, clazz);
+		return new Gson().fromJson(input, clazz);
 	}
 }

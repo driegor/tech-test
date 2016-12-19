@@ -1,5 +1,6 @@
 package com.company.mvc.response;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -16,7 +17,6 @@ import org.mockito.Mockito;
 
 import com.company.mockito.MockitoTest;
 import com.company.mvc.exception.ResponseException;
-import com.company.mvc.response.ResponseWriter;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -55,6 +55,24 @@ public class ResponseWriterTest extends MockitoTest {
 		// check if write was called with the ExpectedResponse values
 		verify(exchange, times(1)).sendResponseHeaders(response.getStatus().value(), response.getContentLength());
 		os.close();
+
+	}
+
+	@Test
+	public void testRedirectResponse() throws IOException, ResponseException {
+
+		String redirection = "/hola/adios";
+		Response response = Responses.redirect(redirection);
+		Headers headers = new Headers();
+
+		Mockito.when(exchange.getResponseHeaders()).thenReturn(headers);
+
+		ResponseWriter responseWriter = new ResponseWriter();
+		responseWriter.write(exchange, response);
+
+		verify(exchange, times(1)).sendResponseHeaders(301, -1);
+
+		assertEquals(redirection, headers.get("Location").stream().findAny().get());
 
 	}
 

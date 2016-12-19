@@ -6,7 +6,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -37,11 +39,12 @@ public class UserRestControllerTest extends MockitoTest {
 	public void testGet() throws ServiceException {
 		String name = "dummyName";
 		String password = "password";
+		Map<String, String> params = new HashMap<>();
 
 		UserDTO userDTO = UserDTOBuilder.builder().userName(name).password(password).build();
 		when(userService.get(name)).thenReturn(userDTO);
 
-		Response response = userRestController.getUser(name);
+		Response response = userRestController.getUser(name, params);
 		assertNotNull(response);
 		assertEquals(ContentType.APPLICATION_JSON, response.getContentType());
 		assertEquals(HttpStatus.OK, response.getStatus());
@@ -53,6 +56,7 @@ public class UserRestControllerTest extends MockitoTest {
 	public void testGetAll() throws ServiceException {
 		String name = "dummyName";
 		String password = "password";
+		Map<String, String> params = new HashMap<>();
 
 		//// @formatter:off
 		List<UserDTO> users = IntStream.range(1, 5)
@@ -62,7 +66,7 @@ public class UserRestControllerTest extends MockitoTest {
 
 		when(userService.getAll()).thenReturn(users);
 
-		Response response = userRestController.getAll();
+		Response response = userRestController.getAll(params);
 		assertNotNull(response);
 		assertEquals(ContentType.APPLICATION_JSON, response.getContentType());
 		assertEquals(HttpStatus.OK, response.getStatus());
@@ -74,11 +78,12 @@ public class UserRestControllerTest extends MockitoTest {
 	public void testPost() throws ServiceException {
 		String name = "dummyName";
 		String password = "password";
+		Map<String, String> params = new HashMap<>();
 
 		UserDTO userDTO = UserDTOBuilder.builder().userName(name).password(password).build();
 		when(userService.save(userDTO)).thenReturn(userDTO);
 
-		Response response = userRestController.createUser(userDTO);
+		Response response = userRestController.createUser(userDTO, params);
 		assertNotNull(response);
 		assertEquals(ContentType.APPLICATION_JSON, response.getContentType());
 		assertEquals(HttpStatus.CREATED, response.getStatus());
@@ -90,11 +95,12 @@ public class UserRestControllerTest extends MockitoTest {
 	public void testPut() throws ServiceException {
 		String name = "dummyName";
 		String password = "password";
+		Map<String, String> params = new HashMap<>();
 
 		UserDTO userDTO = UserDTOBuilder.builder().userName(name).password(password).build();
 		when(userService.save(name, userDTO)).thenReturn(userDTO);
 
-		Response response = userRestController.updateUser(name, userDTO);
+		Response response = userRestController.updateUser(name, userDTO, params);
 		assertNotNull(response);
 		assertEquals(ContentType.APPLICATION_JSON, response.getContentType());
 		assertEquals(HttpStatus.OK, response.getStatus());
@@ -105,7 +111,9 @@ public class UserRestControllerTest extends MockitoTest {
 	@Test
 	public void testDelete() throws ServiceException {
 		String name = "dummyName";
-		Response response = userRestController.delete(name);
+		Map<String, String> params = new HashMap<>();
+
+		Response response = userRestController.delete(name, params);
 		verify(userService, times(1)).remove(name);
 
 		assertNotNull(response);

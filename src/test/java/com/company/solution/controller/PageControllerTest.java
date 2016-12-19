@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -31,11 +33,12 @@ public class PageControllerTest extends MockitoTest {
 	public void testRenderPage() {
 		String userName = "dummyUserName";
 		List<String> roles = Arrays.asList("role1", "role2");
+		Map<String, String> params = new HashMap<>();
 		Principal principal = new Principal(userName, roles);
 		when(userSession.getPrincipal()).thenReturn(principal);
 
-		PageController pageController = new PageController(authService);
-		Response response = pageController.goToPage(String.valueOf(1), userSession);
+		PageController pageController = new PageController();
+		Response response = pageController.goToPage(String.valueOf(1), userSession, params);
 
 		assertEquals(ContentType.TEXT_HTML, response.getContentType());
 		assertEquals(HttpStatus.OK, response.getStatus());
