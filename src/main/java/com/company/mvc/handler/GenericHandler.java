@@ -5,13 +5,11 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import com.company.mvc.mapping.MappingData;
-import com.company.mvc.mapping.MappingHandler;
 import com.company.mvc.mapping.MappingProcessor;
+import com.company.mvc.mapping.MappingResolver;
 import com.company.mvc.response.Response;
 import com.company.mvc.response.ResponseWriter;
-import com.company.mvc.security.UserSession;
-import com.company.mvc.security.auth.IAuthService;
-import com.company.mvc.security.exception.AuthenticationException;
+import com.company.mvc.security.SecurityUtils;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -19,25 +17,43 @@ public class GenericHandler implements HttpHandler {
 
 	private static final Logger LOGGER = Logger.getLogger(GenericHandler.class);
 
-	public static final Object JSESSION_ID = "JSESSION_ID";
-
 	protected String rootMapping;
 
-	protected IAuthService authService;
+	private MappingResolver mappingResolver;
 
-	public GenericHandler(IAuthService authService) {
-		this.authService = authService;
+	private MappingProcessor mappingProcessor;
+
+	private ResponseWriter responseWriter;
+
+	public GenericHandler() {
+		this.mappingResolver = getMappingResolver();
+		this.mappingProcessor = getMappingProcessor();
+		this.responseWriter = getResponseWriter();
+	}
+
+	protected MappingResolver getMappingResolver() {
+		return new MappingResolver();
+	}
+
+	protected MappingProcessor getMappingProcessor() {
+		return new MappingProcessor();
+	}
+
+	protected ResponseWriter getResponseWriter() {
+		return new ResponseWriter();
 	}
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		try {
+
 			// get controller method to invoke
-			MappingData mappingData = new MappingHandler().getMappingData(rootMapping, exchange, this);
+			MappingData mappingData = mappingResolver.resolveMapping(rootMapping, exchange, this);
 			// invoke controller method with args
-			Response response = new MappingProcessor().process(mappingData, this);
+			boolean useSession = useSession() && !SecurityUtils.skipAuthorize(mappingData.getPath());
+			Response response = mappingProcessor.process(mappingData, exchange, useSession, this);
 			// write response
-			new ResponseWriter().write(exchange, response);
+			responseWriter.write(exchange, response);
 
 		} catch (Exception e) {
 			// handle exception
@@ -47,10 +63,6 @@ public class GenericHandler implements HttpHandler {
 
 	public boolean useSession() {
 		return Boolean.FALSE;
-	}
-
-	public UserSession getUserSession(String sessionId) throws AuthenticationException {
-		return authService.getUserSession(sessionId);
 	}
 
 }

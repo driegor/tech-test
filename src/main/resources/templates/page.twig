@@ -3,7 +3,17 @@
 	<meta name="description" content="Technical test for Backends">
 </head>
 
-<a href="/clearSession">Clear User session</a>
+<a href="/auth/logout?JSESSION_ID={{SESSION_KEY}}">Clear User session</a>
 
 <h1>This is page '{{PAGE_NAME}}'</h1>
 <h2>Hello '{{USER_NAME}}'</h2>
+
+<h3>List of pages</h3>
+<ul>
+
+{% for i in [1,2,3] %}
+        <li><a href="/pages/Page {{i}}?JSESSION_ID={{SESSION_KEY}}">Go to page {{ i }}</a></li>
+{% endfor %}
+
+
+</ul>

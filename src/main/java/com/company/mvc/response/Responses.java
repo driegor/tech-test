@@ -46,6 +46,11 @@ public final class Responses {
 		return new Response(content, HttpStatus.INTERNAL_SERVER_ERROR, ContentType.TEXT_HTML);
 	}
 
+	public static Response redirect(String redirection) {
+		return new Response(redirection, HttpStatus.OK, ContentType.TEXT_HTML, Boolean.TRUE);
+
+	}
+
 	public static <T> String contentToString(T content, ContentType contentType) {
 
 		if (ContentType.APPLICATION_JSON.equals(contentType)) {
@@ -53,4 +58,5 @@ public final class Responses {
 		}
 		return String.valueOf(content);
 	}
+
 }

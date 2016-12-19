@@ -52,14 +52,4 @@ public class CoreUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T requestBodyToPostData(String requestBody, Class<T> requestBodyClass) {
-		// class extends from String , return the requesBody without any
-		// transformation
-		if (String.class.isAssignableFrom(requestBodyClass)) {
-			return (T) requestBody;
-		}
-		// Json content
-		return JsonUtils.readFromJson(requestBody, requestBodyClass);
-	}
 }

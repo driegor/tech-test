@@ -2,6 +2,7 @@ package com.company.mvc.mapping;
 
 import java.lang.reflect.Method;
 
+import com.company.mvc.enums.ContentType;
 import com.company.mvc.enums.RequestMethod;
 
 public class MappingData {
@@ -11,8 +12,17 @@ public class MappingData {
 
 	private String bindingValue;
 	private String requestBody;
-	private String sessionId;
 	private Class<?> requestBodyClass;
+	private String path;
+	private ContentType contentType;
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 	public String getBindValue() {
 		return bindingValue;
@@ -54,12 +64,12 @@ public class MappingData {
 		this.requestBodyClass = requestBodyClass;
 	}
 
-	public void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
+	public void setContentType(ContentType contentType) {
+		this.contentType = contentType;
 	}
 
-	public String getSessionId() {
-		return sessionId;
+	public ContentType getContentType() {
+		return contentType;
 	}
 
 	public static class MappingDataBuilder {
@@ -99,8 +109,13 @@ public class MappingData {
 			return this;
 		}
 
-		public MappingDataBuilder sessionId(String sessionId) {
-			instance.setSessionId(sessionId);
+		public MappingDataBuilder path(String path) {
+			instance.setPath(path);
+			return this;
+		}
+
+		public MappingDataBuilder contentType(ContentType contentType) {
+			instance.setContentType(contentType);
 			return this;
 		}
 

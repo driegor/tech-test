@@ -1,39 +1,54 @@
 package com.company.solution.controller.page;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.company.mvc.annotations.RequestMapping;
 import com.company.mvc.enums.RequestMethod;
 import com.company.mvc.response.Response;
-import com.company.mvc.security.SecurityUtils;
-import com.company.mvc.security.UserSession;
-import com.company.mvc.security.auth.AuthForm;
+import com.company.mvc.response.Responses;
 import com.company.mvc.security.auth.IAuthService;
 import com.company.mvc.security.exception.AuthenticationException;
+import com.company.mvc.security.session.data.UserSession;
+import com.company.solution.common.dto.GlobalConst;
+import com.company.solution.form.LoginForm;
 
 public class LoginController extends GenericPageController {
 
 	public static final String ROOT_MAPPING = "/auth";
 	private static final Logger LOGGER = Logger.getLogger(LoginController.class);
+	private IAuthService authService;
 
 	public LoginController(IAuthService authService) {
-		super(authService);
+		this.authService = authService;
 		this.rootMapping = ROOT_MAPPING;
 	}
 
-	@RequestMapping(pattern = "/form")
-	public Response form() {
+	@RequestMapping(pattern = "/login")
+	public Response login(Map<String, String> params) {
 		LOGGER.info("Show login form [%s]");
+		model.put("POST_LOGIN", params.get(GlobalConst.POST_REDIRECT_URL));
 		return getPage("templates/form.twig");
 	}
 
-	@RequestMapping(pattern = "/login", method = RequestMethod.POST)
-	public Response login(String form, UserSession userSession) throws UnsupportedEncodingException {
-		AuthForm authForm = SecurityUtils.getAuthForm(form);
+	@RequestMapping(pattern = "/logout")
+	public Response logout(UserSession userSession, Map<String, String> params) {
+		authService.logout(params.get(GlobalConst.JSESSION_ID));
+		return Responses.redirect(GlobalConst.LOGIN_URL);
+	}
+
+	@RequestMapping(pattern = "/authenticate", method = RequestMethod.POST, payLoad = LoginForm.class)
+	public Response authenticate(LoginForm form, Map<String, String> params) throws UnsupportedEncodingException {
 		try {
-			String sessionKey = authService.login(authForm);
+			String sessionKey = authService.login(form.getUserName(), form.getPassword());
+			if (form.getPostLogin() != null && !"".equals(form.getPostLogin())) {
+				String redirection = String.format("%s?%s=%s", form.getPostLogin(), GlobalConst.JSESSION_ID,
+						sessionKey);
+				return Responses.redirect(redirection);
+			}
+			model.put("USER_NAME", form.getUserName());
 			model.put(SESSION_KEY, sessionKey);
 			return getPage("templates/home.twig");
 

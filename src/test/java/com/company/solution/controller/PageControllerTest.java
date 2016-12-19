@@ -14,9 +14,9 @@ import com.company.mockito.MockitoTest;
 import com.company.mvc.enums.ContentType;
 import com.company.mvc.enums.HttpStatus;
 import com.company.mvc.response.Response;
-import com.company.mvc.security.UserSession;
 import com.company.mvc.security.auth.IAuthService;
 import com.company.mvc.security.auth.Principal;
+import com.company.mvc.security.session.data.UserSession;
 import com.company.solution.controller.page.PageController;
 
 public class PageControllerTest extends MockitoTest {

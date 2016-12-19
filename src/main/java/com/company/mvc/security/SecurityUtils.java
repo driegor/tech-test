@@ -1,23 +1,11 @@
 package com.company.mvc.security;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.UUID;
 
-import com.company.mvc.security.auth.AuthForm;
-import com.company.mvc.security.auth.AuthForm.AuthFormBuilder;
+import com.company.mvc.security.session.data.UserSession;
+import com.company.solution.common.dto.GlobalConst;
 
 public class SecurityUtils {
-
-	public static AuthForm getAuthForm(String data) throws UnsupportedEncodingException {
-
-		String[] pairs = data.split("\\&");
-		String[] fields = pairs[0].split("=");
-		String name = URLDecoder.decode(fields[1], "UTF-8");
-		fields = pairs[1].split("=");
-		String password = URLDecoder.decode(fields[1], "UTF-8");
-		return AuthFormBuilder.builder().userName(name).password(password).build();
-	}
 
 	// generate session key
 	public static String createSessionKey() {
@@ -28,5 +16,15 @@ public class SecurityUtils {
 	public static boolean isExpired(UserSession session, long timeOut) {
 		long currentTime = System.currentTimeMillis();
 		return currentTime > session.getCreationTime() + timeOut;
+	}
+
+	public static boolean skipAuthorize(String path) {
+
+		if (path == null) {
+			return Boolean.FALSE;
+		}
+
+		return GlobalConst.AUTHORIZE_URL.equals(path) || GlobalConst.LOGIN_URL.equals(path);
+
 	}
 }

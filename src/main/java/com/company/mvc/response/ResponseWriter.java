@@ -17,6 +17,12 @@ public class ResponseWriter {
 	public void write(HttpExchange exchange, Response response) throws ResponseException {
 		OutputStream os = null;
 		try {
+			// if the response is a redirection, just redirect to that page
+			if (response.isRedirect()) {
+				Redirect.redirect(exchange, response.getContent());
+				return;
+			}
+
 			// get output stream from httpExchange
 			os = exchange.getResponseBody();
 			Headers headers = exchange.getResponseHeaders();

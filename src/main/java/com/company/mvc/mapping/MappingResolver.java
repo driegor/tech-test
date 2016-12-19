@@ -18,12 +18,12 @@ import com.company.mvc.handler.GenericHandler;
 import com.company.mvc.mapping.MappingData.MappingDataBuilder;
 import com.sun.net.httpserver.HttpExchange;
 
-public class MappingHandler {
+public class MappingResolver {
 
 	private static final String MAPPING_NOT_FOUND = "Not mapping found for path ['%s'] and method ['%s']";
 	private static final String INVALID_REQUEST_BODY = "Not valid request body";
 
-	public MappingData getMappingData(String rootMapping, HttpExchange exchange, GenericHandler handler)
+	public MappingData resolveMapping(String rootMapping, HttpExchange exchange, GenericHandler handler)
 			throws HandlerException {
 
 		RequestMethod rq;
@@ -38,7 +38,6 @@ public class MappingHandler {
 
 		// get path from request
 		String path = exchange.getRequestURI().getPath();
-		String queryString = exchange.getRequestURI().getQuery();
 
 		// get methods annotated with "RequestMapping" in this class and
 		// subclasses to find which method we must to invoke
@@ -73,17 +72,8 @@ public class MappingHandler {
 			mappingData.setRequestBody(requestBody);
 		}
 
-		// does the controller use session?
-		if (handler.useSession() && queryString != null) {
-			// get session id
-			String pathPattern = String.format("^.*%s=(.*)$", GenericHandler.JSESSION_ID);
-			Pattern pattern = Pattern.compile(pathPattern);
-			Matcher matcher = pattern.matcher(queryString);
-			if (matcher.find()) {
-				mappingData.setSessionId(CoreUtils.getFirstMatch(matcher));
-			}
-		}
-
+		// add path to mappingData
+		mappingData.setPath(path);
 		// return found mapping
 		return mappingData;
 	}
@@ -105,7 +95,7 @@ public class MappingHandler {
 			if (matcher.find()) {
 				String bindingValue = CoreUtils.getFirstMatch(matcher);
 				mappingData = MappingDataBuilder.builder().bindingValue(bindingValue).requestMethod(rq).method(method)
-						.requestBodyClass(annotation.payLoad()).build();
+						.requestBodyClass(annotation.payLoad()).contentType(annotation.contentType()).build();
 			}
 		}
 		return mappingData;

@@ -1,13 +1,12 @@
 package com.company.solution.service.impl;
 
 import com.company.mvc.security.SecurityUtils;
-import com.company.mvc.security.SessionData;
-import com.company.mvc.security.UserSession;
-import com.company.mvc.security.UserSession.UserSessionBuilder;
-import com.company.mvc.security.auth.AuthForm;
 import com.company.mvc.security.auth.IAuthService;
 import com.company.mvc.security.auth.Principal;
 import com.company.mvc.security.exception.AuthenticationException;
+import com.company.mvc.security.session.data.SessionData;
+import com.company.mvc.security.session.data.UserSession;
+import com.company.mvc.security.session.data.UserSession.UserSessionBuilder;
 import com.company.solution.common.dto.UserDTO;
 import com.company.solution.exception.ServiceException;
 import com.company.solution.service.IUserService;
@@ -41,11 +40,11 @@ public class AuthService implements IAuthService {
 	}
 
 	@Override
-	public String login(AuthForm form) throws AuthenticationException {
+	public String login(String userName, String password) throws AuthenticationException {
 
 		UserDTO user;
 		try {
-			user = userService.findByUserAndPassword(form.getUserName(), form.getPassword());
+			user = userService.findByUserAndPassword(userName, password);
 		} catch (ServiceException e) {
 			throw new AuthenticationException("Error retrieving user", e);
 		}
@@ -64,7 +63,12 @@ public class AuthService implements IAuthService {
 	}
 
 	@Override
-	public UserSession getUserSession(String sessionKey) throws AuthenticationException {
+	public void logout(String sessionId) {
+		sessionData.removeSession(sessionId);
+	}
+
+	@Override
+	public UserSession getUserSession(String sessionKey) {
 		return sessionData.getSession(sessionKey, SESSION_TIMEOUT);
 	}
 

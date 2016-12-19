@@ -4,16 +4,28 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.company.common.utils.CoreUtils;
 import com.company.mvc.exception.BadRequestException;
 import com.company.mvc.exception.HandlerException;
-import com.company.mvc.handler.GenericHandler;
 import com.company.mvc.response.Response;
+import com.company.solution.common.dto.GlobalConst;
+import com.company.solution.mapper.Mapper;
+import com.sun.net.httpserver.HttpExchange;
 
 public class MappingProcessor {
 
+	private Mapper mapper;
+
+	public MappingProcessor() {
+		mapper = getMapper();
+	}
+
+	protected Mapper getMapper() {
+		return new Mapper();
+	}
+
 	// process request
-	public Response process(MappingData mappingData, GenericHandler controller) throws HandlerException {
+	public Response process(MappingData mappingData, HttpExchange exchange, boolean needsSession, Object controller)
+			throws HandlerException {
 
 		Response response = null;
 
@@ -31,14 +43,16 @@ public class MappingProcessor {
 			}
 			// transform requestbody to the expected class
 			if (requestBody != null) {
-				argList.add(CoreUtils.requestBodyToPostData(mappingData.getRequestBody(),
-						mappingData.getRequestBodyClass()));
+				argList.add(mapper.string2class(mappingData.getRequestBody(), mappingData.getRequestBodyClass(),
+						mappingData.getContentType()));
 			}
-			// Do we need to propagate the session id ?
-			if (controller.useSession()) {
-				argList.add(mappingData.getSessionId() != null ? controller.getUserSession(mappingData.getSessionId())
-						: null);
+			// Do we need to pass the user session to the controller ?
+			if (needsSession) {
+				argList.add(exchange.getAttribute(GlobalConst.SESSION));
 			}
+
+			// add parameters
+			argList.add(exchange.getAttribute(GlobalConst.PARAMS));
 
 			Object[] argArr = argList.stream().toArray(size -> new Object[size]);
 			response = (Response) method.invoke(controller, argArr);

@@ -1,4 +1,4 @@
-package com.company.mvc.security;
+package com.company.mvc.security.session.data;
 
 import com.company.mvc.security.auth.Principal;
 

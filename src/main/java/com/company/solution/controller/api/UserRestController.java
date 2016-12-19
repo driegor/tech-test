@@ -10,7 +10,6 @@ import com.company.mvc.enums.RequestMethod;
 import com.company.mvc.handler.GenericHandler;
 import com.company.mvc.response.Response;
 import com.company.mvc.response.Responses;
-import com.company.mvc.security.auth.IAuthService;
 import com.company.solution.common.dto.UserDTO;
 import com.company.solution.exception.ServiceException;
 import com.company.solution.service.IUserService;
@@ -23,8 +22,7 @@ public class UserRestController extends GenericHandler {
 
 	private IUserService userService;
 
-	public UserRestController(IAuthService authService, IUserService userService) {
-		super(authService);
+	public UserRestController(IUserService userService) {
 		this.userService = userService;
 		this.rootMapping = ROOT_MAPPING;
 	}

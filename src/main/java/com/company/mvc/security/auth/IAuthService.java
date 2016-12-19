@@ -1,11 +1,13 @@
 package com.company.mvc.security.auth;
 
-import com.company.mvc.security.UserSession;
 import com.company.mvc.security.exception.AuthenticationException;
+import com.company.mvc.security.session.data.UserSession;
 
 public interface IAuthService {
 
-	String login(AuthForm form) throws AuthenticationException;
+	String login(String userName, String password) throws AuthenticationException;
 
-	UserSession getUserSession(String sessionKey) throws AuthenticationException;
+	void logout(String sessionId);
+
+	UserSession getUserSession(String sessionKey);
 }
