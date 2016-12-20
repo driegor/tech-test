@@ -185,4 +185,27 @@ public class MappingProcessorTest extends MockitoTest {
 		assertNotNull(response);
 		assertEquals("Dummy content without value", response.getContent());
 	}
+
+	@Test
+	public void testPreAuthorizeWithBindings() throws HandlerException, NoSuchMethodException, SecurityException {
+		MappingProcessor mappingProcessor = new MappingProcessor();
+		String dummyBindingValue = "dummyValue";
+		Map<String, String> map = new HashMap<>();
+
+		GenericHandler matchMethodHandler = new GenericHandler() {
+			@SuppressWarnings("unused")
+			public Response matchMethod(String value, Map<String, String> map) {
+				return Responses.success(String.format("Dummy content with value =%s", value));
+			}
+		};
+
+		when(exchange.getAttribute(GlobalConst.PARAMS)).thenReturn(map);
+
+		Method method = matchMethodHandler.getClass().getMethod("matchMethod", String.class, Map.class);
+		MappingData mappingData = MappingDataBuilder.builder().bindingValue(dummyBindingValue).method(method).build();
+
+		Response response = mappingProcessor.process(mappingData, exchange, matchMethodHandler);
+		assertNotNull(response);
+		assertEquals("Dummy content with value =dummyValue", response.getContent());
+	}
 }

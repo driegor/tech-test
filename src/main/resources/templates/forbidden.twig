@@ -1,0 +1,17 @@
+<head>
+	<title>Backend Test Forbidden Page</title>
+	<meta name="description" content="Technical test for Backends">
+</head>
+
+<a href="/auth/logout?JSESSION_ID={{SESSION_KEY}}">Clear User session</a>
+<h2>Wellcome '{{USER_NAME}}'</h2>
+<h2>You don't have permission to access this page</h2>
+<h3>List of pages</h3>
+<ul>
+
+{% for i in [1,2,3] %}
+        <li><a href="/pages/Page {{i}}?JSESSION_ID={{SESSION_KEY}}">Go to page {{ i }}</a></li>
+{% endfor %}
+
+
+</ul>

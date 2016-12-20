@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import com.company.mvc.enums.ContentType;
 import com.company.mvc.enums.RequestMethod;
+import com.company.mvc.security.annotations.PreAuthorize;
 
 public class MappingData {
 
@@ -15,6 +16,7 @@ public class MappingData {
 	private Class<?> requestBodyClass;
 	private String path;
 	private ContentType contentType;
+	private PreAuthorize preAuthorize;
 
 	public String getPath() {
 		return path;
@@ -72,6 +74,14 @@ public class MappingData {
 		return contentType;
 	}
 
+	public PreAuthorize getPreAuthorize() {
+		return preAuthorize;
+	}
+
+	public void setPreAuthorize(PreAuthorize preAuthorize) {
+		this.preAuthorize = preAuthorize;
+	}
+
 	public static class MappingDataBuilder {
 
 		private MappingData instance;
@@ -111,6 +121,11 @@ public class MappingData {
 
 		public MappingDataBuilder path(String path) {
 			instance.setPath(path);
+			return this;
+		}
+
+		public MappingDataBuilder preAuthorize(PreAuthorize preAuthorize) {
+			instance.setPreAuthorize(preAuthorize);
 			return this;
 		}
 

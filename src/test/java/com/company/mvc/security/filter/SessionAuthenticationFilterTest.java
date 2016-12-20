@@ -23,7 +23,7 @@ import com.sun.net.httpserver.Filter.Chain;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
-public class AuthenticationFilterTest extends MockitoTest {
+public class SessionAuthenticationFilterTest extends MockitoTest {
 
 	@Mock
 	IAuthService authService;
@@ -36,7 +36,7 @@ public class AuthenticationFilterTest extends MockitoTest {
 
 	@Test
 	public void testAuthenticated() throws IOException, URISyntaxException {
-		AuthenticationFilter filter = new AuthenticationFilter(authService);
+		SessionAuthenticationFilter filter = new SessionAuthenticationFilter(authService);
 		Mockito.when(exchange.getRequestURI()).thenReturn(new URI(GlobalConst.LOGIN_URL));
 		filter.doFilter(exchange, chain);
 		verify(chain, times(1)).doFilter(exchange);
@@ -44,7 +44,7 @@ public class AuthenticationFilterTest extends MockitoTest {
 
 	@Test
 	public void testNotLogged() throws IOException, URISyntaxException {
-		AuthenticationFilter filter = new AuthenticationFilter(authService);
+		SessionAuthenticationFilter filter = new SessionAuthenticationFilter(authService);
 		String path = "/any/url";
 
 		Headers headers = new Headers();
@@ -62,7 +62,7 @@ public class AuthenticationFilterTest extends MockitoTest {
 
 	@Test
 	public void testLogged() throws IOException, URISyntaxException {
-		AuthenticationFilter filter = new AuthenticationFilter(authService);
+		SessionAuthenticationFilter filter = new SessionAuthenticationFilter(authService);
 		String path = "/any/url";
 		String sessionId = "xxxxx";
 		UserSession userSession = new UserSession();

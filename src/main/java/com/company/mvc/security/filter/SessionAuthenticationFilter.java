@@ -11,13 +11,13 @@ import com.company.solution.common.dto.GlobalConst;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
-public class AuthenticationFilter extends Filter {
+public class SessionAuthenticationFilter extends Filter {
 
 	private static final String FILTER_DESC = "Creates a UserSession object and propagates its value";
 
 	IAuthService authService;
 
-	public AuthenticationFilter(IAuthService authService) {
+	public SessionAuthenticationFilter(IAuthService authService) {
 		this.authService = authService;
 	}
 
@@ -49,9 +49,10 @@ public class AuthenticationFilter extends Filter {
 
 		boolean sessionCreated = userSession != null;
 
-		// if exists session just go to the page
+		// if exists session save user data in exchange and go to the page
 		if (sessionCreated) {
 			exchange.setAttribute(GlobalConst.SESSION, userSession);
+			exchange.setAttribute(GlobalConst.PRINCIPAL, userSession.getPrincipal());
 			chain.doFilter(exchange);
 
 			// if doesnt redirect to loginUrl with current path as parameter

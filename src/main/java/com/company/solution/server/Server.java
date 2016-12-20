@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 
 import com.company.db.DataBase;
 import com.company.mvc.security.auth.IAuthService;
-import com.company.mvc.security.filter.AuthenticationFilter;
 import com.company.mvc.security.filter.PropagateArgumentsFilter;
+import com.company.mvc.security.filter.SessionAuthenticationFilter;
 import com.company.mvc.security.session.data.SessionData;
 import com.company.solution.controller.api.UserRestController;
 import com.company.solution.controller.page.LoginController;
@@ -33,20 +33,22 @@ public class Server {
 
 	public static void main(String[] args) throws IOException {
 
-		Map<Object, Object> context = loadContext();
 		int port = (args != null && args.length > 0) ? Integer.valueOf(args[0]) : PORT;
 
 		HttpServer httpServer = HttpServer.create(new InetSocketAddress(port), 0);
 
-		createUserRestController(context, httpServer);
+		// load beans context
+		Map<Object, Object> context = loadContext();
 
+		// create controllers
+		createUserRestController(context, httpServer);
 		createLoginController(context, httpServer);
 		createPageController(context, httpServer);
 
 		httpServer.setExecutor(null);
 		httpServer.start();
 
-		LOGGER.info("Score server listening at port " + port);
+		LOGGER.info("Server listening at port " + port);
 	}
 
 	private static void createUserRestController(Map<Object, Object> context, HttpServer server) {
@@ -67,7 +69,7 @@ public class Server {
 
 		// add filters
 		httpPageContext.getFilters().add(new PropagateArgumentsFilter());
-		httpPageContext.getFilters().add(new AuthenticationFilter(authService));
+		httpPageContext.getFilters().add(new SessionAuthenticationFilter(authService));
 
 	}
 
@@ -77,7 +79,7 @@ public class Server {
 
 		// add filters
 		httpPageContext.getFilters().add(new PropagateArgumentsFilter());
-		httpPageContext.getFilters().add(new AuthenticationFilter(authService));
+		httpPageContext.getFilters().add(new SessionAuthenticationFilter(authService));
 	}
 
 	private static Map<Object, Object> loadContext() {

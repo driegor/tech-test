@@ -16,6 +16,7 @@ import com.company.mvc.exception.MappingException;
 import com.company.mvc.exception.MappingNotFoundException;
 import com.company.mvc.handler.GenericHandler;
 import com.company.mvc.mapping.MappingData.MappingDataBuilder;
+import com.company.mvc.security.annotations.PreAuthorize;
 import com.sun.net.httpserver.HttpExchange;
 
 public class MappingResolver {
@@ -81,21 +82,25 @@ public class MappingResolver {
 	// check if found method has proper annotations values
 	protected MappingData extractMappingDataFromMethod(String rootMapping, String path, RequestMethod rq, Method method)
 			throws MappingException {
-		RequestMapping annotation = method.getAnnotation(RequestMapping.class);
+		RequestMapping mappingAnnotation = method.getAnnotation(RequestMapping.class);
+		PreAuthorize preAuthorizeAnnotation = method.getAnnotation(PreAuthorize.class);
 		MappingData mappingData = null;
 
 		// Does it match ?
-		if (rq.equals(annotation.method())) {
+		if (rq.equals(mappingAnnotation.method())) {
 
-			String pathPattern = String.format("^%s%s$", rootMapping, annotation.pattern());
+			String pathPattern = String.format("^%s%s$", rootMapping, mappingAnnotation.pattern());
 			Pattern pattern = Pattern.compile(pathPattern);
 			Matcher matcher = pattern.matcher(path);
 
 			// if pattern matches, get first match from regexp
 			if (matcher.find()) {
 				String bindingValue = CoreUtils.getFirstMatch(matcher);
+
 				mappingData = MappingDataBuilder.builder().bindingValue(bindingValue).requestMethod(rq).method(method)
-						.requestBodyClass(annotation.payLoad()).contentType(annotation.contentType()).build();
+						.requestBodyClass(mappingAnnotation.payLoad()).preAuthorize(preAuthorizeAnnotation)
+						.contentType(mappingAnnotation.contentType()).build();
+
 			}
 		}
 		return mappingData;

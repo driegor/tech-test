@@ -59,4 +59,9 @@ public final class Responses {
 		return String.valueOf(content);
 	}
 
+	public static Response custom(String content, HttpStatus httpStatus) {
+		return new Response(content, httpStatus, ContentType.TEXT_HTML);
+
+	}
+
 }
