@@ -16,8 +16,8 @@ import org.mockito.Mock;
 import com.company.data.DummyPostData;
 import com.company.mockito.MockitoTest;
 import com.company.mvc.enums.ContentType;
-import com.company.mvc.exception.BadRequestException;
 import com.company.mvc.exception.HandlerException;
+import com.company.mvc.exception.ProcessingMethodException;
 import com.company.mvc.handler.GenericHandler;
 import com.company.mvc.mapping.MappingData.MappingDataBuilder;
 import com.company.mvc.response.Response;
@@ -44,7 +44,7 @@ public class MappingProcessorTest extends MockitoTest {
 		MappingProcessor mappingProcessor = new MappingProcessor();
 		String dummyBindingValue = "dummyValue";
 		MappingData mappingData = MappingDataBuilder.builder().bindingValue(dummyBindingValue).build();
-		thrown.expect(BadRequestException.class);
+		thrown.expect(ProcessingMethodException.class);
 		mappingProcessor.process(mappingData, exchange, null);
 	}
 
@@ -62,7 +62,7 @@ public class MappingProcessorTest extends MockitoTest {
 		Method method = handlerWithArgumentMisMatchMethod.getClass().getMethod("argumentMisMatchMethod", Integer.class);
 		MappingData mappingData = MappingDataBuilder.builder().bindingValue(dummyBindingValue).method(method).build();
 
-		thrown.expect(BadRequestException.class);
+		thrown.expect(ProcessingMethodException.class);
 		mappingProcessor.process(mappingData, exchange, handlerWithArgumentMisMatchMethod);
 	}
 

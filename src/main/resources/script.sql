@@ -54,5 +54,7 @@ INSERT INTO USER_ROLES(role,username) VALUES ('PAGE_1','user3');
 INSERT INTO USER_ROLES(role,username) VALUES ('PAGE_2','user3');
 INSERT INTO USER_ROLES(role,username) VALUES ('PAGE_3','user3');
 
+INSERT INTO USER_ROLES(role,username) VALUES ('ADMIN','admin');
+
 
 

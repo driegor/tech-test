@@ -4,8 +4,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.company.mvc.exception.BadRequestException;
+import com.company.common.utils.CoreUtils;
 import com.company.mvc.exception.HandlerException;
+import com.company.mvc.exception.ProcessingMethodException;
 import com.company.mvc.response.Response;
 import com.company.solution.common.dto.GlobalConst;
 import com.company.solution.mapper.Mapper;
@@ -34,6 +35,8 @@ public class MappingProcessor {
 
 		Response response = null;
 
+		Object[] argArr = null;
+
 		// get values to invoke method from mappingData
 		String binding = mappingData.getBindValue();
 		String requestBody = mappingData.getRequestBody();
@@ -59,11 +62,24 @@ public class MappingProcessor {
 			// add parameters
 			argList.add(exchange.getAttribute(GlobalConst.PARAMS));
 
-			Object[] argArr = argList.stream().toArray(size -> new Object[size]);
+			argArr = argList.stream().toArray(size -> new Object[size]);
 			response = (Response) method.invoke(controller, argArr);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			throw new BadRequestException(e.getMessage(), e);
+			if (CoreUtils.isHandlerException(e)) {
+				// It's a HandlerException so throw it again
+				throw (HandlerException) e.getCause();
+			}
+			// It's an unknown exception.
+
+			// methods arguments doesn't match the expected ones
+			if (e.getCause() == null) {
+				throw new ProcessingMethodException(String.format("Error procesing method %s with params %s",
+						method != null ? method.getName() : "", argArr), e);
+			} else {
+				// internal error
+				Throwable tw = e.getCause() != null ? e.getCause() : e;
+				throw new ProcessingMethodException(tw.getMessage(), tw);
+			}
 		}
 
 		return response;

@@ -2,7 +2,8 @@ package com.company.mvc.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 import com.company.mvc.exception.ResponseException;
 import com.sun.net.httpserver.Headers;
@@ -11,7 +12,7 @@ import com.sun.net.httpserver.HttpExchange;
 public class ResponseWriter {
 	static final String RESPONSE_ERROR = "Error ['%s'] writting response";
 	private static final String CONTENT_TYPE = "Content-Type";
-	private static final Logger LOGGER = Logger.getLogger(ResponseWriter.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ResponseWriter.class);
 
 	// Write response object to exchange outputStream
 	public void write(HttpExchange exchange, Response response) throws ResponseException {
@@ -39,7 +40,7 @@ public class ResponseWriter {
 					os.close();
 				}
 			} catch (IOException e) {
-				LOGGER.severe("Error closing stream.[" + e + "]");
+				LOGGER.error("Error closing stream.[" + e + "]");
 			}
 		}
 	}

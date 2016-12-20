@@ -120,6 +120,7 @@ public class UserServiceTest extends MockitoTest {
 	@Test
 	public void testDelete() throws SQLException, ServiceException {
 		String name = "dummyName";
+		when(userRepository.delete(name)).thenReturn(Boolean.TRUE);
 		userService.remove(name);
 		verify(userRepository, times(1)).delete(name);
 

@@ -4,11 +4,14 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import com.company.mvc.exception.HandlerException;
+import com.company.mvc.exception.ResponseException;
 import com.company.mvc.mapping.MappingData;
 import com.company.mvc.mapping.MappingProcessor;
 import com.company.mvc.mapping.MappingResolver;
 import com.company.mvc.response.Response;
 import com.company.mvc.response.ResponseWriter;
+import com.company.mvc.response.Responses;
 import com.company.mvc.security.SecurityUtils;
 import com.company.mvc.security.handler.AuthorizationResponseHandler;
 import com.company.mvc.security.handler.DefaultAuthorizationResponseHandler;
@@ -85,8 +88,27 @@ public class GenericHandler implements HttpHandler {
 
 		} catch (Exception e) {
 			// handle exception
-			LOGGER.error(e.getMessage());
+			handleException(exchange, e);
 		}
+	}
+
+	private void handleException(HttpExchange exchange, Exception e) {
+
+		try {
+			// response to wrapper the exception
+			Response response;
+			// is a know HandlerException lets write its content
+			if (e instanceof HandlerException) {
+				response = ((HandlerException) e).getErrorResponse();
+			} else {
+				// is an unchecked exception.
+				response = Responses.internalError(e.getMessage());
+			}
+			responseWriter.write(exchange, response);
+		} catch (ResponseException re) {
+			LOGGER.info("Error writing response [" + re + "]");
+		}
+
 	}
 
 	public boolean useSession() {

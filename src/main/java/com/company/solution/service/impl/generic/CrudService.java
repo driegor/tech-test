@@ -3,6 +3,7 @@ package com.company.solution.service.impl.generic;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.company.mvc.enums.HttpStatus;
 import com.company.solution.exception.ServiceException;
 import com.company.solution.mapper.Mapper;
 import com.company.solution.repository.ICrudRepository;
@@ -18,6 +19,8 @@ public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements 
 	@Override
 	public DTO get(I id) throws ServiceException {
 		try {
+			E entity = repository.find(id);
+			checkFound(id, entity);
 			return mapper.map(repository.find(id), dtoClazz);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
@@ -42,7 +45,6 @@ public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements 
 			return mapper.map(repository.save(entity), dtoClazz);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
-
 		}
 	}
 
@@ -50,7 +52,9 @@ public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements 
 	public DTO save(I id, DTO dto) throws ServiceException {
 		E entity = mapper.map(dto, entityClazz);
 		try {
-			return mapper.map(repository.update(id, entity), dtoClazz);
+			E updated = repository.update(id, entity);
+			checkFound(id, updated);
+			return mapper.map(updated, dtoClazz);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
 
@@ -60,10 +64,17 @@ public class CrudService<I, E, DTO, C extends ICrudRepository<I, E>> implements 
 	@Override
 	public void remove(I id) throws ServiceException {
 		try {
-			repository.delete(id);
+			boolean delete = repository.delete(id);
+			checkFound(id, delete ? delete : null);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
 
+		}
+	}
+
+	private void checkFound(I id, Object entity) throws ServiceException {
+		if (entity == null) {
+			throw new ServiceException(String.format("Entity '%s 'not found", id), HttpStatus.NOT_FOUND);
 		}
 	}
 }

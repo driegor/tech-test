@@ -91,7 +91,11 @@ public class UserRepository implements IUserRepository {
 	@Override
 	public User update(String userName, User user) throws SQLException {
 		try {
-			dataBase.executeUpdate(getUpdateUserQueries(userName, user, find(userName).getRoles()));
+			User toUpdate = find(userName);
+			if (toUpdate == null) {
+				return null;
+			}
+			dataBase.executeUpdate(getUpdateUserQueries(userName, user, toUpdate.getRoles()));
 			return find(user.getUserName());
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e1) {
 			throw new SecurityException();
@@ -99,10 +103,11 @@ public class UserRepository implements IUserRepository {
 	}
 
 	@Override
-	public void delete(String name) throws SQLException {
+	public boolean delete(String name) throws SQLException {
 		String deleteUser = String.format(DELETE_USER_QUERY, name);
 		String deleteRoles = String.format(DELETE_USER_ROLES_QUERY, name);
-		dataBase.executeUpdate(deleteUser, deleteRoles);
+		List<Integer> deletions = dataBase.executeUpdate(deleteRoles, deleteUser);
+		return deletions.stream().filter(count -> count > 0).count() > 0;
 	}
 
 	private String[] getUpdateUserQueries(String userName, User user, List<String> oldRoles)

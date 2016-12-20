@@ -31,6 +31,16 @@ public final class Responses {
 		return new Response(content, HttpStatus.UNAUTHORIZED, ContentType.TEXT_HTML);
 	}
 
+	public static Response unAuthorized(String content, ContentType contentType) {
+		return new Response(content, HttpStatus.UNAUTHORIZED, contentType);
+	}
+
+	// 403 FORBIDDEN
+	public static Response forbidden(String content, ContentType contentType) {
+		return new Response(content, HttpStatus.FORBIDDEN, contentType);
+
+	}
+
 	// 404 NOT_FOUND
 	public static Response notFound(String content) {
 		return new Response(content, HttpStatus.NOT_FOUND, ContentType.TEXT_HTML);
@@ -51,12 +61,9 @@ public final class Responses {
 
 	}
 
-	public static <T> String contentToString(T content, ContentType contentType) {
+	public static Response custom(String content, HttpStatus httpStatus, ContentType contentType) {
+		return new Response(content, httpStatus, contentType);
 
-		if (ContentType.APPLICATION_JSON.equals(contentType)) {
-			return JsonUtils.writeToJson(content);
-		}
-		return String.valueOf(content);
 	}
 
 	public static Response custom(String content, HttpStatus httpStatus) {
@@ -64,4 +71,11 @@ public final class Responses {
 
 	}
 
+	public static <T> String contentToString(T content, ContentType contentType) {
+
+		if (ContentType.APPLICATION_JSON.equals(contentType)) {
+			return JsonUtils.writeToJson(content);
+		}
+		return String.valueOf(content);
+	}
 }

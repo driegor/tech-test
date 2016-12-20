@@ -11,7 +11,7 @@ public interface ICrudRepository<I, E> {
 
 	E save(E e) throws SQLException;
 
-	void delete(I id) throws SQLException;
+	boolean delete(I id) throws SQLException;
 
 	E update(I id, E e) throws SQLException;
 }

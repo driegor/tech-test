@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.company.db.DataBase;
 import com.company.mvc.security.auth.IAuthService;
+import com.company.mvc.security.filter.BasicAuthenticationFilter;
 import com.company.mvc.security.filter.PropagateArgumentsFilter;
 import com.company.mvc.security.filter.SessionAuthenticationFilter;
 import com.company.mvc.security.session.data.SessionData;
@@ -58,6 +59,8 @@ public class Server {
 				new UserRestController(userService));
 
 		// add filters
+		httpPageContext.getFilters().add(new PropagateArgumentsFilter());
+		httpPageContext.getFilters().add(new BasicAuthenticationFilter(userService));
 
 	}
 

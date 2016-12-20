@@ -135,6 +135,7 @@ public class DataBase {
 			if (conn != null) {
 				conn.rollback();
 			}
+			throw new SQLException(e);
 		} finally {
 			try {
 				if (conn != null) {

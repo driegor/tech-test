@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import com.company.mvc.exception.HandlerException;
+
 public class CoreUtils {
 
 	public static String getFieldValue(Object object, String fieldName)
@@ -50,6 +52,14 @@ public class CoreUtils {
 		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
 			return buffer.lines().collect(Collectors.joining("\n"));
 		}
+	}
+
+	// check if this exception of its cause is assignable from HanderException
+	public static boolean isHandlerException(Throwable e) {
+		if (e == null) {
+			return false;
+		}
+		return HandlerException.class.isAssignableFrom(e.getClass()) || CoreUtils.isHandlerException(e.getCause());
 	}
 
 }
