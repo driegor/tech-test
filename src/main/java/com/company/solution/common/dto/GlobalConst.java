@@ -2,6 +2,8 @@ package com.company.solution.common.dto;
 
 public class GlobalConst {
 
+	public static final long SESSION_TIMEOUT = 300000;
+
 	public static final String JSESSION_ID = "JSESSION_ID";
 	public static final String AUTHORIZATION = "AUTHORIZATION";
 	public static final String POST_REDIRECT_URL = "postRedirectUrl";

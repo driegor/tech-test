@@ -4,12 +4,16 @@ import com.company.mvc.security.auth.Principal;
 
 public class UserSession {
 
-	long creationTime;
+	long lastAccessTime;
 	Principal principal;
 	String key;
 
-	public long getCreationTime() {
-		return creationTime;
+	public long getLastAccessTime() {
+		return lastAccessTime;
+	}
+
+	public void setLastAccessTime(long lastAccessTime) {
+		this.lastAccessTime = lastAccessTime;
 	}
 
 	public Principal getPrincipal() {
@@ -22,10 +26,6 @@ public class UserSession {
 
 	public void setKey(String key) {
 		this.key = key;
-	}
-
-	public void setCreationTime(long creationTime) {
-		this.creationTime = creationTime;
 	}
 
 	public void setPrincipal(Principal principal) {
@@ -49,19 +49,20 @@ public class UserSession {
 			return this;
 		}
 
-		public UserSessionBuilder creationTime(long creationTime) {
-			instance.setCreationTime(creationTime);
+		public UserSessionBuilder principal(Principal principal) {
+			instance.setPrincipal(principal);
 			return this;
 		}
 
-		public UserSessionBuilder principal(Principal principal) {
-			instance.setPrincipal(principal);
+		public UserSessionBuilder lastAccessTime(long lastAccessTime) {
+			instance.setLastAccessTime(lastAccessTime);
 			return this;
 		}
 
 		public UserSession build() {
 			return instance;
 		}
+
 	}
 
 }

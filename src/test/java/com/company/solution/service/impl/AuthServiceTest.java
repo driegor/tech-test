@@ -96,7 +96,7 @@ public class AuthServiceTest extends MockitoTest {
 	public void testGetUserSession() {
 		String sessionId = "xxxxx";
 		authService.getUserSession(sessionId);
-		verify(sessionData, times(1)).getSession(sessionId, 300000);
+		verify(sessionData, times(1)).getSession(sessionId);
 	}
 
 }

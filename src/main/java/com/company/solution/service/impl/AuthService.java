@@ -13,7 +13,6 @@ import com.company.solution.service.IUserService;
 
 public class AuthService implements IAuthService {
 
-	private static final long SESSION_TIMEOUT = 300000;
 	private static volatile AuthService service;
 	private IUserService userService;
 	private SessionData sessionData;
@@ -57,8 +56,8 @@ public class AuthService implements IAuthService {
 
 		String key = SecurityUtils.createSessionKey();
 		UserSession userSession = UserSessionBuilder.builder()
-				.principal(new Principal(user.getUserName(), user.getRoles())).creationTime(System.currentTimeMillis())
-				.key(key).build();
+				.principal(new Principal(user.getUserName(), user.getRoles()))
+				.lastAccessTime(System.currentTimeMillis()).key(key).build();
 		addSession(key, userSession);
 		return key;
 
@@ -71,7 +70,7 @@ public class AuthService implements IAuthService {
 
 	@Override
 	public UserSession getUserSession(String sessionKey) {
-		return sessionData.getSession(sessionKey, SESSION_TIMEOUT);
+		return sessionData.getSession(sessionKey);
 	}
 
 	private void addSession(String key, UserSession userSession) {
