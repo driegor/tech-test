@@ -11,6 +11,7 @@ import com.company.db.DataBase;
 import com.company.mvc.security.auth.IAuthService;
 import com.company.mvc.security.filter.AuthenticationFilter;
 import com.company.mvc.security.filter.PropagateArgumentsFilter;
+import com.company.mvc.security.session.data.SessionData;
 import com.company.solution.controller.api.UserRestController;
 import com.company.solution.controller.page.LoginController;
 import com.company.solution.controller.page.PageController;
@@ -99,7 +100,7 @@ public class Server {
 		context.put(IUserService.class, userService);
 
 		AuthService authService = AuthService.getInstance();
-		authService.init(userService);
+		authService.init(userService, new SessionData());
 		context.put(IAuthService.class, authService);
 		return context;
 	}

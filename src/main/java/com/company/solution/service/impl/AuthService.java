@@ -16,7 +16,7 @@ public class AuthService implements IAuthService {
 	private static final long SESSION_TIMEOUT = 300000;
 	private static volatile AuthService service;
 	private IUserService userService;
-	private SessionData sessionData = new SessionData();
+	private SessionData sessionData;
 
 	// private constructor
 	private AuthService() {
@@ -35,8 +35,10 @@ public class AuthService implements IAuthService {
 	}
 
 	// I would use a DI framework to inject these beans
-	public void init(IUserService userService) {
+	public void init(IUserService userService, SessionData sessionData) {
+
 		this.userService = userService;
+		this.sessionData = sessionData;
 	}
 
 	@Override
