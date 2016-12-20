@@ -51,15 +51,40 @@
 		</dependency>
 	</dependencies>
 		<build>
-	    <testSourceDirectory>src/test/java</testSourceDirectory>
-	    <plugins>
-	     <plugin>
-	        <artifactId>maven-compiler-plugin</artifactId>
-	        <configuration>
-	          <source>1.8</source>
-	          <target>1.8</target>
-	        </configuration>
-	      </plugin>      
+		<plugins>
+			<plugin>
+				  <groupId>org.apache.maven.plugins</groupId>
+				  <artifactId>maven-assembly-plugin</artifactId>
+				  <executions>
+				    <execution>
+				      <phase>package</phase>
+				      <goals>
+				        <goal>single</goal>
+				      </goals>
+				      <configuration>
+				        <finalName>test-web-application</finalName>
+				     	<archive>
+				          <manifest>
+				            <mainClass>com.company.solution.server.Server</mainClass>
+				          </manifest>
+				        </archive>
+				        <descriptorRefs>
+          					<descriptorRef>jar-with-dependencies</descriptorRef>
+				        </descriptorRefs>
+				        <appendAssemblyId>false</appendAssemblyId>
+				        <attach>false</attach>
+				        
+				      </configuration>
+				    </execution>
+				  </executions>
+				</plugin>
+		     <plugin>
+		        <artifactId>maven-compiler-plugin</artifactId>
+		        <configuration>
+		          <source>1.8</source>
+		          <target>1.8</target>
+		        </configuration>
+		      </plugin>      
 	    </plugins>
 	  </build>
 </project>
