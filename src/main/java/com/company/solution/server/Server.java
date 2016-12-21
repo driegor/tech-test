@@ -54,7 +54,7 @@ public class Server {
 
 	private static void createUserRestController(Map<Object, Object> context, HttpServer server) {
 
-		IUserService userService = (IUserService) context.get(IUserService.class);
+		final IUserService userService = (IUserService) context.get(IUserService.class);
 		HttpContext httpPageContext = server.createContext(UserRestController.ROOT_MAPPING,
 				new UserRestController(userService));
 
@@ -66,7 +66,7 @@ public class Server {
 
 	private static void createLoginController(Map<Object, Object> context, HttpServer server) {
 
-		IAuthService authService = (IAuthService) context.get(IAuthService.class);
+		final IAuthService authService = (IAuthService) context.get(IAuthService.class);
 		HttpContext httpPageContext = server.createContext(LoginController.ROOT_MAPPING,
 				new LoginController(authService));
 
@@ -77,7 +77,7 @@ public class Server {
 	}
 
 	private static void createPageController(Map<Object, Object> context, HttpServer server) {
-		IAuthService authService = (IAuthService) context.get(IAuthService.class);
+		final IAuthService authService = (IAuthService) context.get(IAuthService.class);
 		HttpContext httpPageContext = server.createContext(PageController.ROOT_MAPPING, new PageController());
 
 		// add filters
@@ -86,7 +86,7 @@ public class Server {
 	}
 
 	private static Map<Object, Object> loadContext() {
-		Map<Object, Object> context = new HashMap<>();
+		final Map<Object, Object> context = new HashMap<>();
 
 		// create database
 		DataBase dataBase = new DataBase();

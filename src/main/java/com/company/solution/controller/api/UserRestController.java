@@ -34,24 +34,6 @@ public class UserRestController extends GenericHandler {
 		this.rootMapping = ROOT_MAPPING;
 	}
 
-	// override getAuthorizationResponseHandler method
-	@Override
-	protected AuthorizationResponseHandler getAuthorizationResponseHandler() {
-		return new AuthorizationResponseHandler() {
-
-			@Override
-			public void onFail(HttpExchange exchange) throws IOException {
-
-				String content = String.format("{message:\'%s\'}", "Forbidden access");
-				try {
-					new ResponseWriter().write(exchange, Responses.forbidden(content, ContentType.APPLICATION_JSON));
-				} catch (ResponseException e) {
-					LOGGER.error("Error writting to response " + e.getMessage());
-				}
-			}
-		};
-	}
-
 	@RequestMapping
 	public Response getAll(Map<String, String> params) throws ServiceException {
 		LOGGER.info("Get all users");
@@ -88,4 +70,21 @@ public class UserRestController extends GenericHandler {
 		return Responses.success(String.format("User %s deleted", name), ContentType.APPLICATION_JSON);
 	}
 
+	// override getAuthorizationResponseHandler method
+	@Override
+	protected AuthorizationResponseHandler getAuthorizationResponseHandler() {
+		return new AuthorizationResponseHandler() {
+
+			@Override
+			public void onFail(HttpExchange exchange) throws IOException {
+
+				String content = String.format("{message:\'%s\'}", "Forbidden access");
+				try {
+					new ResponseWriter().write(exchange, Responses.forbidden(content, ContentType.APPLICATION_JSON));
+				} catch (ResponseException e) {
+					LOGGER.error("Error writting to response " + e.getMessage());
+				}
+			}
+		};
+	}
 }

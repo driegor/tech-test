@@ -55,9 +55,13 @@ public class SessionAuthenticationFilter extends Filter {
 			exchange.setAttribute(GlobalConst.PRINCIPAL, userSession.getPrincipal());
 			chain.doFilter(exchange);
 
-			// if doesnt redirect to loginUrl with current path as parameter
+			// redirect to loginUrl with current path as parameter
 		} else {
-			Redirect.redirect(exchange, String.format("%s?%s=%s", loginURL, GlobalConst.POST_REDIRECT_URL, path));
+			if (loginURL != path) {
+				Redirect.redirect(exchange, String.format("%s?%s=%s", loginURL, GlobalConst.POST_REDIRECT_URL, path));
+			} else {
+				Redirect.redirect(exchange, String.format("%s", loginURL, path));
+			}
 		}
 	}
 }

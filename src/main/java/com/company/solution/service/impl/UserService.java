@@ -41,7 +41,14 @@ public class UserService extends CrudService<String, User, UserDTO, IUserReposit
 	@Override
 	public UserDTO findByUserAndPassword(String userName, String password) throws ServiceException {
 		try {
-			return mapper.map(repository.findByUserNameAndPassword(userName, password), UserDTO.class);
+
+			User user = repository.findByUserNameAndPassword(userName, password);
+
+			if (user == null) {
+				throw new ServiceException(String.format("User %s doesn't exist", userName));
+			}
+
+			return mapper.map(user, UserDTO.class);
 		} catch (SQLException e) {
 			throw new ServiceException(e);
 		}

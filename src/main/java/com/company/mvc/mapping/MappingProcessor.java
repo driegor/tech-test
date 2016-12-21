@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.company.common.utils.CoreUtils;
 import com.company.mvc.exception.HandlerException;
 import com.company.mvc.exception.ProcessingMethodException;
 import com.company.mvc.response.Response;
@@ -65,7 +64,7 @@ public class MappingProcessor {
 			argArr = argList.stream().toArray(size -> new Object[size]);
 			response = (Response) method.invoke(controller, argArr);
 		} catch (Exception e) {
-			if (CoreUtils.isHandlerException(e)) {
+			if (isHandlerException(e)) {
 				// It's a HandlerException so throw it again
 				throw (HandlerException) e.getCause();
 			}
@@ -84,6 +83,14 @@ public class MappingProcessor {
 
 		return response;
 
+	}
+
+	// check if this exception of its cause is assignable from HanderException
+	private boolean isHandlerException(Throwable e) {
+		if (e == null) {
+			return false;
+		}
+		return HandlerException.class.isAssignableFrom(e.getClass()) || isHandlerException(e.getCause());
 	}
 
 }

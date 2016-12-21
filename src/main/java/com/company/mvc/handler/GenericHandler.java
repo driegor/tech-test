@@ -44,26 +44,6 @@ public class GenericHandler implements HttpHandler {
 		this.authorizationResponseHandler = getAuthorizationResponseHandler();
 	}
 
-	protected PermissionEvaluator getPermissionEvaluator() {
-		return new DefaultPermissionEvaluator();
-	}
-
-	protected MappingResolver getMappingResolver() {
-		return new MappingResolver();
-	}
-
-	protected MappingProcessor getMappingProcessor() {
-		return new MappingProcessor();
-	}
-
-	protected ResponseWriter getResponseWriter() {
-		return new ResponseWriter();
-	}
-
-	protected AuthorizationResponseHandler getAuthorizationResponseHandler() {
-		return new DefaultAuthorizationResponseHandler();
-	}
-
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		try {
@@ -77,7 +57,7 @@ public class GenericHandler implements HttpHandler {
 				authorizationResponseHandler.onFail(exchange);
 				return;
 			}
-			// we dont need propagate session in api controllers and in
+			// we dont need to propagate session in REST controllers or
 			// login/authorize methods
 			boolean propagateSession = useSession() && !SecurityUtils.skipAuthorize(mappingData.getPath());
 
@@ -113,6 +93,26 @@ public class GenericHandler implements HttpHandler {
 
 	public boolean useSession() {
 		return Boolean.FALSE;
+	}
+
+	protected PermissionEvaluator getPermissionEvaluator() {
+		return new DefaultPermissionEvaluator();
+	}
+
+	protected MappingResolver getMappingResolver() {
+		return new MappingResolver();
+	}
+
+	protected MappingProcessor getMappingProcessor() {
+		return new MappingProcessor();
+	}
+
+	protected ResponseWriter getResponseWriter() {
+		return new ResponseWriter();
+	}
+
+	protected AuthorizationResponseHandler getAuthorizationResponseHandler() {
+		return new DefaultAuthorizationResponseHandler();
 	}
 
 }

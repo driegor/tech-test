@@ -1,11 +1,15 @@
 package com.company.mvc.mapping;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.company.common.utils.CoreUtils;
 import com.company.mvc.annotations.RequestMapping;
@@ -66,7 +70,7 @@ public class MappingResolver {
 		if (rq.needsRequestBody()) {
 			String requestBody = null;
 			try {
-				requestBody = CoreUtils.fromStream(exchange.getRequestBody());
+				requestBody = fromStream(exchange.getRequestBody());
 			} catch (IOException e) {
 				throw new MappingException(INVALID_REQUEST_BODY, e);
 			}
@@ -104,5 +108,12 @@ public class MappingResolver {
 			}
 		}
 		return mappingData;
+	}
+
+	// get string from stream
+	private String fromStream(InputStream input) throws IOException {
+		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
+			return buffer.lines().collect(Collectors.joining("\n"));
+		}
 	}
 }

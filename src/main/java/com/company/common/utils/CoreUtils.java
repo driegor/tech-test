@@ -1,9 +1,5 @@
 package com.company.common.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -12,8 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
-
-import com.company.mvc.exception.HandlerException;
 
 public class CoreUtils {
 
@@ -45,21 +39,6 @@ public class CoreUtils {
 			firstGroup = matcher.group(1);
 		}
 		return firstGroup;
-	}
-
-	// get string from stream
-	public static String fromStream(InputStream input) throws IOException {
-		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
-			return buffer.lines().collect(Collectors.joining("\n"));
-		}
-	}
-
-	// check if this exception of its cause is assignable from HanderException
-	public static boolean isHandlerException(Throwable e) {
-		if (e == null) {
-			return false;
-		}
-		return HandlerException.class.isAssignableFrom(e.getClass()) || CoreUtils.isHandlerException(e.getCause());
 	}
 
 }
