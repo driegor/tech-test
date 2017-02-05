@@ -43,7 +43,7 @@ http://localhost:8080/api/users
 This rest endpoint uses Basic authentication, these are the headers for the users above
 
 user1 ->AUTHORIZATION:Basic dXNlcjE6MTIzNDU2
-user2 ->AUTHORIZATION:Basic dXNlcjI6MTIzNDU2
+user2 ->AUTHORIZATION:Basic dXNlcjI6MTIzNDU2 
 user3 ->AUTHORIZATION:Basic dXNlcjM6MTIzNDU2
 admin ->AUTHORIZATION:Basic YWRtaW46MTIzNDU2
 
