@@ -23,6 +23,7 @@ $ java -jar ./target/test-web-application.jar
 
 Users
 user1,user2,user3,admin
+
 Password:123456
 
 Roles
